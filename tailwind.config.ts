@@ -1,4 +1,4 @@
-const { nextui } = require("@nextui-org/react");
+const { nextui } = require("@nextui-org/react"); // eslint-disable-line
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -10,5 +10,5 @@ module.exports = {
     extend: {},
   },
   darkMode: "class",
-  plugins: [nextui()],
+  plugins: [nextui()], // eslint-disable-line
 };
