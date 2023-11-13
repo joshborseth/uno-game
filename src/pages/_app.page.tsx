@@ -12,6 +12,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         position="bottom-right"
         toastOptions={{
           duration: 3000,
+          position: "top-center",
           style: {
             border: "1px solid #713200",
             padding: "1rem",
