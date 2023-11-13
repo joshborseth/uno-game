@@ -1,10 +1,10 @@
 import Head from "next/head";
 import React from "react";
 
-const BaseHead = () => {
+const BaseHead = ({ title }: { title?: string }) => {
   return (
     <Head>
-      <title>UNO</title>
+      <title>{title ?? "UNO"}</title>
       <meta name="description" content="UNO" />
       <link rel="icon" href="/favicon.ico" />
 

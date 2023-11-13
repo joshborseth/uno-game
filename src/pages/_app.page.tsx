@@ -1,13 +1,11 @@
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
-import BaseHead from "~/components/BaseHead";
 import { Toaster } from "react-hot-toast";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
-      <BaseHead />
       <Toaster
         position="bottom-right"
         toastOptions={{
