@@ -13,3 +13,7 @@
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
+
+main {
+  @apply bg-slate-100;
+}
