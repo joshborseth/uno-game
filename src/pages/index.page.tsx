@@ -1,15 +1,24 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { api } from "~/utils/api";
 import { LETTERS } from "~/constants/letters";
 import toast from "react-hot-toast";
 import BaseHead from "~/components/BaseHead";
+import { api } from "~/utils/api";
 
 const Home = () => {
   const router = useRouter();
   const [inputState, setInputState] = useState({
     name: "",
     code: "",
+  });
+
+  const createRoom = api.room.create.useMutation({
+    onSuccess: (code) => {
+      void router.push(`/host/waiting-room/${code}`);
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
   });
 
   const joinRoom = api.room.join.useMutation({
@@ -21,12 +30,6 @@ const Home = () => {
     },
   });
 
-  const createRoom = api.room.create.useMutation({
-    onSuccess: (code) => {
-      toast.success(`Room Created! Here is your room code: ${code}`);
-      void router.push(`/host/waiting-room/${code}`);
-    },
-  });
   return (
     <>
       <BaseHead />
@@ -42,15 +45,10 @@ const Home = () => {
               </p>
               <div className="card-actions justify-start">
                 <button
-                  onClick={() => {
-                    createRoom.mutate();
-                  }}
+                  onClick={() => createRoom.mutate()}
                   className="btn btn-primary"
                 >
                   Select
-                  {createRoom.isLoading && (
-                    <span className="loading loading-spinner" />
-                  )}
                 </button>
               </div>
             </div>
@@ -103,16 +101,12 @@ const Home = () => {
                     if (!inputState.name || !inputState.code)
                       return toast.error("Please fill out all fields");
                     joinRoom.mutate({
-                      name: inputState.name,
-                      code: inputState.code,
+                      ...inputState,
                     });
                   }}
                   className="btn btn-primary"
                 >
                   Select
-                  {joinRoom.isLoading && (
-                    <span className="loading loading-spinner" />
-                  )}
                 </button>
               </div>
             </div>
