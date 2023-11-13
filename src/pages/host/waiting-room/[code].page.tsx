@@ -5,6 +5,7 @@ import { BackButton } from "~/components/BackButton";
 import { PlayerCard } from "~/components/PlayerCard";
 import toast from "react-hot-toast";
 import BaseHead from "~/components/BaseHead";
+import { api } from "~/utils/api";
 
 type Player = {
   name: string;
@@ -16,6 +17,16 @@ const WaitingRoom = () => {
   const code = router.query.code as string;
 
   const [players, setPlayers] = useState<Player[]>([]);
+
+  const getInitialPlayers = api.player.getAll.useQuery(
+    {
+      roomCode: code,
+    },
+    {
+      enabled: !!code,
+    },
+  );
+
   useEffect(() => {
     if (!code) return;
     const channel = pusher.subscribe(code);
@@ -38,6 +49,20 @@ const WaitingRoom = () => {
     );
     return () => pusher.unsubscribe(code);
   }, [code, players]);
+
+  useEffect(() => {
+    if (!getInitialPlayers.data) return;
+    const players = getInitialPlayers.data.map((player) => {
+      return {
+        name: player.name ?? "Anonymous",
+        uid: player.uid,
+      } satisfies Player;
+    }) satisfies Player[];
+    setPlayers(players);
+  }, [getInitialPlayers.data]);
+
+  // TODO: replace this with spinner component
+  if (getInitialPlayers.isLoading) return <p>Loading...</p>;
 
   return (
     <>
