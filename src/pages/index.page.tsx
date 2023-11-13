@@ -34,7 +34,7 @@ const Home = () => {
         <div className="card bg-primary-content border-primary flex flex-col gap-4 border shadow-xl">
           <div className="card-body">
             <h3 className="card-title">Host</h3>
-            <p>Host a game to play with others!</p>
+            <p className="font-extralight">Host a game to play with others!</p>
             <div className="card-actions justify-start">
               <button
                 onClick={() => {
@@ -48,41 +48,47 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="card bg-primary-content border-primary flex flex-col gap-4 border shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Player</h2>
-            <p>Play a game with others!</p>
-            <label htmlFor="name">Player Name:</label>
-            <input
-              id="name"
-              type="text"
-              onChange={(e) => {
-                setInputState({ ...inputState, name: e.target.value });
-              }}
-              className="input input-bordered w-full max-w-xs"
-            />
+        <div className="card bg-primary-content border-primary border shadow-xl">
+          <div className="card-body flex flex-col gap-6">
+            <div>
+              <h2 className="card-title">Player</h2>
+              <p className="font-extralight">Play a game with others!</p>
+            </div>
+            <div>
+              <label htmlFor="name">Player Name:</label>
+              <input
+                id="name"
+                type="text"
+                onChange={(e) => {
+                  setInputState({ ...inputState, name: e.target.value });
+                }}
+                className="input input-bordered w-full max-w-xs"
+              />
+            </div>
 
-            <label htmlFor="room-code">Game Code:</label>
-            <input
-              maxLength={4}
-              onChange={(e) => {
-                if (
-                  e.target.value.split("").every((v) => {
-                    const typedVal =
-                      v.toUpperCase() as (typeof LETTERS)[number];
-                    return LETTERS.includes(typedVal);
-                  })
-                ) {
-                  setInputState({
-                    ...inputState,
-                    code: e.target.value.toUpperCase(),
-                  });
-                }
-              }}
-              value={inputState.code}
-              className="input input-bordered w-full max-w-xs"
-              id="room-code"
-            />
+            <div>
+              <label htmlFor="room-code">Game Code:</label>
+              <input
+                maxLength={4}
+                onChange={(e) => {
+                  if (
+                    e.target.value.split("").every((v) => {
+                      const typedVal =
+                        v.toUpperCase() as (typeof LETTERS)[number];
+                      return LETTERS.includes(typedVal);
+                    })
+                  ) {
+                    setInputState({
+                      ...inputState,
+                      code: e.target.value.toUpperCase(),
+                    });
+                  }
+                }}
+                value={inputState.code}
+                className="input input-bordered w-full max-w-xs"
+                id="room-code"
+              />
+            </div>
             <div className="card-actions justify-start">
               <button
                 onClick={() => {

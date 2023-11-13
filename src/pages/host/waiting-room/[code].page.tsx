@@ -1,27 +1,28 @@
 import { useRouter } from "next/router";
-import { PlayerCard } from "../../components/PlayerCard";
-import { Button } from "@/components/ui/button";
+import { PlayerCard } from "~/components/PlayerCard";
 import { useEffect } from "react";
-import { pusher } from "@/lib/pusher";
+import { pusher } from "~/utils/pusher";
 
 const WaitingRoom = () => {
   const router = useRouter();
   const code = router.query.code as string;
   useEffect(() => {
+    if (!code) return;
     const channel = pusher.subscribe(code);
-    channel.bind("room-join", (data: any) => {
+    channel.bind("room-join", (data: unknown) => {
       console.log(data);
     });
     return () => pusher.unsubscribe(code);
   }, [code]);
 
   return (
-    <div className="min-h-screen w-screen justify-center items-center text-4xl font-bold flex flex-col gap-10">
-      <div className="text-center flex flex-col gap-2">
+    <div className="flex min-h-screen w-screen flex-col items-center justify-center gap-10 text-4xl font-bold">
+      <div className="flex flex-col gap-2 text-center">
         <h1>Everyone Join!</h1>
         <h2 className="text-2xl font-normal">Room Code is {code}</h2>
       </div>
       <div className="flex flex-wrap gap-4 py-4">
+        {/* TODO make this actually get players that are connected */}
         <PlayerCard name="Joshua" />
         <PlayerCard name="Jedeer" />
         <PlayerCard name="Hanging Out" />
@@ -31,7 +32,7 @@ const WaitingRoom = () => {
         <PlayerCard name="Benny" />
       </div>
       {/* TODO make this redirect us over to the play page */}
-      <Button>Everyone In?</Button>
+      <button className="btn btn-primary">Everyone In?</button>
     </div>
   );
 };

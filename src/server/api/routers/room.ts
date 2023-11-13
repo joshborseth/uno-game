@@ -48,6 +48,7 @@ export const roomRouter = createTRPCRouter({
       await pusher.trigger(input.code, "room-join", {
         message: input.code,
         sender: input.name,
+        event: "room-join",
       });
 
       return input.code;
