@@ -1,5 +1,6 @@
 import Head from "next/head";
 import React from "react";
+import { Toaster } from "react-hot-toast";
 
 const BaseHead = () => {
   return (
@@ -31,6 +32,17 @@ const BaseHead = () => {
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
       </Head>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            border: "1px solid #713200",
+            padding: "1rem",
+            color: "#713200",
+          },
+        }}
+      />
     </>
   );
 };
