@@ -3,9 +3,11 @@ import { Card } from "~/components/Card";
 
 export default function Home() {
   return (
-    <div>
+    <>
       <BaseHead />
-      <Card type="number" color="red" num="5" />
-    </div>
+      <div className="flex min-h-screen w-full items-center justify-center">
+        <Card type="wild" />
+      </div>
+    </>
   );
 }
