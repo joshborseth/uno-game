@@ -27,11 +27,18 @@ export const roomRouter = createTRPCRouter({
   join: publicProcedure
     .input(
       z.object({
-        code: z.string().length(4),
+        code: z.string(),
         name: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (input.code.length !== 4) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Name must be 4 characters long",
+        });
+      }
+
       const room = await ctx.db.query.Room.findFirst({
         where: eq(Room.code, input.code),
       });
