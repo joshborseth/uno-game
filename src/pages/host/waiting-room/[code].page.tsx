@@ -32,8 +32,8 @@ const WaitingRoom = () => {
       setPlayers((prev) => [...prev, members]);
     });
 
+    //when users leave
     channel.bind("pusher:member_removed", (members: PusherMemberAdded) => {
-      console.log("member removed", members);
       setPlayers((prev) => [
         ...prev.filter((player) => player.id !== members.id),
       ]);
