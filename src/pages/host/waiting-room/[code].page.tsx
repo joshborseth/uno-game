@@ -32,7 +32,8 @@ const WaitingRoom = () => {
       setPlayers((prev) => [...prev, members]);
     });
 
-    channel.bind("pushed:member_removed", (members: PusherMemberAdded) => {
+    //when users leave
+    channel.bind("pusher:member_removed", (members: PusherMemberAdded) => {
       setPlayers((prev) => [
         ...prev.filter((player) => player.id !== members.id),
       ]);
