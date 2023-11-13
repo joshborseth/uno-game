@@ -3,11 +3,11 @@
 
 import {
   index,
-  mysqlTableCreator,
   timestamp,
   varchar,
   int,
   mysqlEnum,
+  mysqlTable,
 } from "drizzle-orm/mysql-core";
 
 import { relations, sql } from "drizzle-orm";
@@ -22,7 +22,6 @@ import { COLORS } from "~/constants/colors";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const mysqlTable = mysqlTableCreator((name) => `uno-game_${name}`);
 
 export const Room = mysqlTable(
   "Rooms",

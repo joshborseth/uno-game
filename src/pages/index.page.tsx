@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
+import { LETTERS } from "~/constants/letters";
 
 const Home = () => {
   const router = useRouter();
@@ -27,22 +28,19 @@ const Home = () => {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-10">
-      <div className="hidden flex-col items-center justify-center gap-10 lg:flex">
-        <h1 className="text-2xl font-bold">Uno</h1>
-        <h2 className="text-xl">Let&apos;s get ready to rumble!</h2>
-      </div>
+      <h1 className="pb-10 text-7xl font-black">Uno</h1>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3">
-        <div className="card bg-base-100 w-96 shadow-xl">
+      <section className="flex w-full items-start justify-center gap-10">
+        <div className="card bg-primary-content border-primary flex flex-col gap-4 border shadow-xl">
           <div className="card-body">
             <h3 className="card-title">Host</h3>
             <p>Host a game to play with others!</p>
-            <div className="card-actions justify-end">
+            <div className="card-actions justify-start">
               <button
                 onClick={() => {
                   createRoom.mutate();
                 }}
-                className="btn btn-primary loading"
+                className="btn btn-primary"
               >
                 Select
               </button>
@@ -50,25 +48,22 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="flex h-full w-full items-center justify-center py-4 text-xl font-normal">
-          <p>Or</p>
-        </div>
-
-        <div className="card bg-base-100 w-96 shadow-xl">
+        <div className="card bg-primary-content border-primary flex flex-col gap-4 border shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Player</h2>
             <p>Play a game with others!</p>
-            {/* <CardContent className="flex flex-col items-start gap-2">
-            <Label htmlFor="name">Player Name:</Label>
-            <Input
+            <label htmlFor="name">Player Name:</label>
+            <input
+              id="name"
+              type="text"
               onChange={(e) => {
                 setInputState({ ...inputState, name: e.target.value });
               }}
-              id="name"
-              value={inputState.name}
+              className="input input-bordered w-full max-w-xs"
             />
-            <Label htmlFor="code">Game Code:</Label>
-            <Input
+
+            <label htmlFor="room-code">Game Code:</label>
+            <input
               maxLength={4}
               onChange={(e) => {
                 if (
@@ -85,29 +80,10 @@ const Home = () => {
                 }
               }}
               value={inputState.code}
+              className="input input-bordered w-full max-w-xs"
               id="room-code"
             />
-            <LoadingButton
-              isLoading={joinRoom.isLoading}
-              onClick={() => {
-                if (!inputState.name || !inputState.code)
-                  return toast({
-                    title: "You are a Moron!",
-                    variant: "destructive",
-                    description:
-                      "Hey Moron! You have to fill out a name and a code to play 🤦‍♂️",
-                  });
-
-                joinRoom.mutate({
-                  name: inputState.name,
-                  code: inputState.code,
-                });
-              }}
-            >
-              Select
-            </LoadingButton>
-          </CardContent> */}
-            <div className="card-actions justify-end">
+            <div className="card-actions justify-start">
               <button
                 onClick={() => {
                   if (!inputState.name || !inputState.code)
@@ -117,7 +93,7 @@ const Home = () => {
                     code: inputState.code,
                   });
                 }}
-                className="btn btn-primary loading"
+                className="btn btn-primary"
               >
                 Select
               </button>
