@@ -7,7 +7,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
       <BaseHead />
-      <Component {...pageProps} />{" "}
+      <Component {...pageProps} />
     </>
   );
 };
