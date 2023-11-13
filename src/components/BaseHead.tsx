@@ -5,7 +5,7 @@ const BaseHead = () => {
   return (
     <>
       <Head>
-        <title>Open UNO</title>
+        <title>Uno</title>
         <meta name="description" content="UNO" />
         <link rel="icon" href="/favicon.ico" />
 
