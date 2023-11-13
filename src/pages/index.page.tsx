@@ -31,7 +31,7 @@ const Home = () => {
       <h1 className="pb-10 text-7xl font-black">Uno</h1>
 
       <section className="flex w-full items-start justify-center gap-10">
-        <div className="card bg-primary-content border-primary flex flex-col gap-4 border shadow-xl">
+        <div className="card flex flex-col gap-4 border border-primary bg-primary-content shadow-xl">
           <div className="card-body">
             <h3 className="card-title">Host</h3>
             <p>Host a game to play with others!</p>
@@ -48,7 +48,7 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="card bg-primary-content border-primary flex flex-col gap-4 border shadow-xl">
+        <div className="card flex flex-col gap-4 border border-primary bg-primary-content shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Player</h2>
             <p>Play a game with others!</p>

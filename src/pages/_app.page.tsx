@@ -3,10 +3,12 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import BaseHead from "~/components/BaseHead";
 import { Toaster } from "react-hot-toast";
+import { Inter } from "next/font/google";
 
+const inter = Inter({ subsets: ["latin"] });
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <>
+    <div className={inter.className}>
       <BaseHead />
       <Toaster
         position="bottom-right"
@@ -20,7 +22,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         }}
       />
       <Component {...pageProps} />
-    </>
+    </div>
   );
 };
 
