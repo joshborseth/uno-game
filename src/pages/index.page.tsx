@@ -4,6 +4,7 @@ import { LETTERS } from "~/constants/letters";
 import toast from "react-hot-toast";
 import BaseHead from "~/components/BaseHead";
 import { api } from "~/utils/api";
+import { nanoid } from "nanoid";
 
 const Home = () => {
   const router = useRouter();
@@ -14,7 +15,13 @@ const Home = () => {
 
   const createRoom = api.room.create.useMutation({
     onSuccess: (code) => {
-      void router.push(`/host/waiting-room/${code}`);
+      void router.push({
+        pathname: `/host/waiting-room/${code}`,
+        query: {
+          userId: nanoid(),
+          name: "HOST",
+        },
+      });
     },
     onError: (err) => {
       toast.error(err.message);
@@ -22,8 +29,14 @@ const Home = () => {
   });
 
   const joinRoom = api.room.join.useMutation({
-    onSuccess: (code) => {
-      void router.push(`/player/waiting-room/${code}`);
+    onSuccess: (data) => {
+      void router.push({
+        pathname: `/player/waiting-room/${data.code}`,
+        query: {
+          userId: data.uid,
+          name: data.name,
+        },
+      });
     },
     onError: (err) => {
       toast.error(err.message);

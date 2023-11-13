@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { pusher } from "~/utils/pusher";
 import { BackButton } from "~/components/BackButton";
 
 import BaseHead from "~/components/BaseHead";
@@ -8,18 +7,24 @@ import { type PresenceChannel } from "pusher-js";
 import toast from "react-hot-toast";
 import { type PusherMemberAdded } from "~/types/PusherMemberAdded";
 import { PlayerCard } from "~/components/PlayerCard";
+import { getPusherInstance } from "~/utils/pusher";
 
 const WaitingRoom = () => {
   const router = useRouter();
   const code = router.query.code as string;
-
+  const name = router.query.name as string;
+  const userId = router.query.userId as string;
   // subscribe users to the channel
 
   const [players, setPlayers] = useState<PusherMemberAdded[]>([]);
 
   useEffect(() => {
-    if (!code) return;
+    if (!code || !name || !userId) return;
 
+    const pusher = getPusherInstance({
+      userId: userId,
+      userName: name,
+    });
     const channel = pusher.subscribe(`presence-${code}`) as PresenceChannel;
     channel.bind("pusher:subscription_succeeded", () => {
       toast.success("Connection Established");
@@ -42,7 +47,7 @@ const WaitingRoom = () => {
     return () => {
       pusher.unsubscribe(`presence-${code}`);
     };
-  }, [code]);
+  }, [code, name, userId]);
   return (
     <>
       <BaseHead title={`UNO - Room Code: ${code || "Loading..."}`} />

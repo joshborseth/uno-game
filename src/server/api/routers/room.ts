@@ -4,7 +4,6 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { fourRandomLetters } from "../../helpers/roomCodeGen";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { pusher } from "../../pusher";
 import { nanoid } from "nanoid";
 export const roomRouter = createTRPCRouter({
   create: publicProcedure.mutation(async ({ ctx }) => {
@@ -46,14 +45,13 @@ export const roomRouter = createTRPCRouter({
       await ctx.db.insert(Player).values({
         name: input.name,
         roomCode: input.code,
-        uid: uid,
-      });
-      await pusher.trigger(input.code, "presence-room-join", {
-        message: input.code,
-        sender: input.name,
-        senderUid: uid,
+        uid,
       });
 
-      return input.code;
+      return {
+        code: input.code,
+        uid,
+        name: input.name,
+      };
     }),
 });
