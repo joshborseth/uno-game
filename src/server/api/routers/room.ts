@@ -5,7 +5,7 @@ import { fourRandomLetters } from "../../helpers/roomCodeGen";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { pusher } from "../../pusher";
-
+import { nanoid } from "nanoid";
 export const roomRouter = createTRPCRouter({
   create: publicProcedure.mutation(async ({ ctx }) => {
     const generateUniqueCode = async (): Promise<string> => {
@@ -17,9 +17,10 @@ export const roomRouter = createTRPCRouter({
       return code;
     };
     const code = await generateUniqueCode();
-
+    const uid = nanoid();
     await ctx.db.insert(Room).values({
       code,
+      uid,
     });
 
     return code;
@@ -41,14 +42,17 @@ export const roomRouter = createTRPCRouter({
           message: "Room not found",
         });
       }
+      const uid = nanoid();
       await ctx.db.insert(Player).values({
         name: input.name,
         roomCode: input.code,
+        uid: uid,
       });
+      // TODO turn all of these triggers and things into helpers so we have some typesafety
       await pusher.trigger(input.code, "room-join", {
         message: input.code,
         sender: input.name,
-        event: "room-join",
+        senderUid: uid,
       });
 
       return input.code;

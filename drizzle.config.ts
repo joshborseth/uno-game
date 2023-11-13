@@ -8,5 +8,4 @@ export default {
   dbCredentials: {
     connectionString: env.DATABASE_URL,
   },
-  tablesFilter: ["uno-game_*"],
 } satisfies Config;
