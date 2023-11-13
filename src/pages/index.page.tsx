@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import BaseHead from "~/components/BaseHead";
 import { api } from "~/utils/api";
 import { nanoid } from "nanoid";
+import Spinner from "~/components/Spinner";
 
 const Home = () => {
   const router = useRouter();
@@ -54,7 +55,7 @@ const Home = () => {
             <div className="card-body">
               <h3 className="card-title">Host</h3>
               <p className="font-extralight">
-                Host a game to play with others!
+                Host a room to play with others!
               </p>
               <div className="card-actions justify-start">
                 <button
@@ -62,6 +63,7 @@ const Home = () => {
                   className="btn btn-primary"
                 >
                   Select
+                  {createRoom.isLoading && <Spinner size="sm" />}
                 </button>
               </div>
             </div>
@@ -71,7 +73,7 @@ const Home = () => {
             <div className="card-body flex flex-col gap-6">
               <div>
                 <h2 className="card-title">Player</h2>
-                <p className="font-extralight">Play a game with others!</p>
+                <p className="font-extralight">Play a room with others!</p>
               </div>
               <div className="flex flex-col gap-4">
                 <label htmlFor="name">Player Name:</label>
@@ -86,7 +88,7 @@ const Home = () => {
               </div>
 
               <div className="flex flex-col gap-4">
-                <label htmlFor="room-code">Game Code:</label>
+                <label htmlFor="room-code">Room Code:</label>
                 <input
                   maxLength={4}
                   onChange={(e) => {
@@ -112,7 +114,9 @@ const Home = () => {
                 <button
                   onClick={() => {
                     if (!inputState.name || !inputState.code)
-                      return toast.error("Please fill out all fields");
+                      return toast.error("Please fill out all fields", {
+                        id: "join-room-error",
+                      });
                     joinRoom.mutate({
                       ...inputState,
                     });
@@ -120,6 +124,7 @@ const Home = () => {
                   className="btn btn-primary"
                 >
                   Select
+                  {joinRoom.isLoading && <Spinner size="sm" />}
                 </button>
               </div>
             </div>
