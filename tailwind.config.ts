@@ -6,24 +6,22 @@ module.exports = {
       keyframes: {
         "y-spin": {
           "0%": {
-            transform: "rotateY(360deg)",
+            transform: "rotateY(360deg) translateY(-10rem)",
           },
           "100%": {
-            transform: "rotateY(0deg)",
+            transform: "rotateY(0deg) translateY(0rem)",
           },
         },
         "y-spin-back": {
           "0%": {
-            transform: "rotateY(180deg)",
+            transform: "rotateY(0deg) translateY(-10rem)",
           },
           "100%": {
-            transform: "rotateY(-180deg)",
+            transform: "rotateY(-180deg) translateY(0rem)",
           },
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
         "flip-card": "y-spin 0.75s ease-out",
         "flip-card-back": "y-spin-back 0.75s ease-out",
       },

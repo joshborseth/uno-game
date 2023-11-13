@@ -4,20 +4,20 @@ export const BackOfCard = ({ animation }: { animation: string }) => {
   const [backAnimation, setBackAnimation] = useState(
     "motion-safe:animate-flip-card-back",
   );
-  useEffect(() => {
-    if (animation) {
-      setBackAnimation("motion-safe:animate-flip-card-back");
-    } else {
-      setBackAnimation("");
-    }
-  }, [animation]);
+  // useEffect(() => {
+  //   if (animation) {
+  //     setBackAnimation("motion-safe:animate-flip-card-back");
+  //   } else {
+  //     setBackAnimation("");
+  //   }
+  // }, [animation]);
 
   return (
     <div
-      className={`no-highlight absolute left-0 top-0 -z-10 h-80 w-56 rounded-md border-2 border-black bg-black p-1 ${backAnimation}`}
+      className={`no-highlight absolute left-0 top-0 z-10 h-40 w-28 rounded-md border-2 border-black bg-black p-1 ${animation}`}
     >
       <div className="relative h-full w-full border-2 border-white p-1">
-        <div className="-ml-2 -mt-6 flex h-full w-full -rotate-12 flex-col items-center justify-center text-7xl font-bold uppercase text-white">
+        <div className="-ml-2 -mt-6 flex h-full w-full -rotate-12 flex-col items-center justify-center text-4xl font-bold uppercase text-white">
           <p className="-mb-1 ml-4">Uno</p>
           <div className="h-1 w-full bg-red-500" />
           <div className="h-1 w-full bg-yellow-500" />

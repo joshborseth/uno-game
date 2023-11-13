@@ -17,33 +17,41 @@ const textColorMap = {
   yellow: "text-yellow-500",
 };
 
-type CardProps =
+export type CardProps =
   | {
       color: (typeof COLORS)[number];
       num: (typeof NUMBERS)[number];
       type: "number";
+      drawingNew?: boolean;
     }
   | {
       color: (typeof COLORS)[number];
       type: "reverse";
+      drawingNew?: boolean;
     }
   | {
       type: "wild";
+      drawingNew?: boolean;
     }
   | {
       color: (typeof COLORS)[number];
       type: "draw2";
+      drawingNew?: boolean;
     }
   | {
       type: "draw4";
+      drawingNew?: boolean;
     }
   | {
       color: (typeof COLORS)[number];
       type: "skip";
+      drawingNew?: boolean;
     };
 
 export const Card = (props: CardProps) => {
-  const [animation, setAnimation] = useState("motion-safe:animate-flip-card");
+  const [animation, setAnimation] = useState(
+    props.drawingNew ? "motion-safe:animate-flip-card" : "",
+  );
   const noColorCondition = props.type === "wild" || props.type === "draw4";
   const bgTwColor = noColorCondition ? "bg-black" : bgColorMap[props.color];
   const textTwColor = noColorCondition
@@ -74,20 +82,20 @@ export const Card = (props: CardProps) => {
   };
 
   return (
-    <button className="relative transition-all hover:scale-[1.03] focus:scale-[1.03]">
+    <button className="relative rounded ring-primary transition-all hover:scale-[1.03] focus:scale-[1.05]">
       <div
-        className={`no-highlight w-56 rounded-md ${bgTwColor} backface-hidden flex h-80 flex-col items-center justify-center border-2 border-black px-4 transition-all ${animation}`}
+        className={`no-highlight relative z-50 w-28 rounded-md ${bgTwColor} backface-hidden flex h-40 flex-col items-center justify-center border-2 border-black px-4 transition-all ${animation}`}
         onAnimationEnd={() => setAnimation("")}
-        onClick={() => setAnimation("motion-safe:animate-flip-card")}
+        onDoubleClick={() => setAnimation("motion-safe:animate-flip-card")}
       >
         <p
           className={`${
             props.type === "wild" || props.type === "draw4"
               ? "text-black"
               : "text-white"
-          } absolute left-2 top-2 text-4xl font-black`}
+          } absolute left-2 top-2 z-10 text-xl font-black`}
           style={{
-            textShadow: `3px 3px 0 ${shadowColor},
+            textShadow: `2px 2px 0 ${shadowColor},
         -1px -1px 0 ${shadowColor},  
          1px -1px 0 ${shadowColor},
          -1px 1px 0 ${shadowColor},
@@ -101,13 +109,13 @@ export const Card = (props: CardProps) => {
             props.type === "wild" || props.type === "draw4"
               ? "text-black"
               : "text-white"
-          } absolute bottom-2 right-2 text-4xl font-black`}
+          } absolute bottom-2 right-2 text-xl font-black`}
           style={{
-            textShadow: `3px 3px 0 ${shadowColor},
-          -1px -1px 0 ${shadowColor},  
-           1px -1px 0 ${shadowColor},
-           -1px 1px 0 ${shadowColor},
-            1px 1px 0 ${shadowColor}`,
+            textShadow: `2px 2px 0 ${shadowColor},
+        -1px -1px 0 ${shadowColor},  
+         1px -1px 0 ${shadowColor},
+         -1px 1px 0 ${shadowColor},
+          1px 1px 0 ${shadowColor}`,
           }}
         >
           {getText({})}
@@ -123,13 +131,13 @@ export const Card = (props: CardProps) => {
               <div className="h-full w-full rounded-br-[75px] bg-green-500" />
               <p
                 style={{
-                  textShadow: `3px 3px 0 #000,
-                -1px -1px 0 #000,  
-                 1px -1px 0 #000,
-                 -1px 1px 0 #000,
-                  1px 1px 0 #000`,
+                  textShadow: `2px 2px 0 #000,
+              -1px -1px 0 ${shadowColor},  
+               1px -1px 0 ${shadowColor},
+               -1px 1px 0 ${shadowColor},
+                1px 1px 0 ${shadowColor}`,
                 }}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-7xl font-black text-white"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-5xl font-black text-white"
               >
                 {getText({ type: "shortened" })}
               </p>
@@ -144,7 +152,7 @@ export const Card = (props: CardProps) => {
             className={`w-full rounded-tl-[75px] bg-white ${heightOfWhite} flex items-center justify-center rounded-br-[75px]`}
           >
             <p
-              className={`text-7xl font-black ${textTwColor}`}
+              className={`text-4xl font-black ${textTwColor}`}
               style={{
                 textShadow: `3px 3px 0 ${shadowColor},
                 -1px -1px 0 ${shadowColor},  
@@ -163,7 +171,7 @@ export const Card = (props: CardProps) => {
             className={`w-full rounded-tl-[75px] bg-white ${heightOfWhite} flex items-center justify-center rounded-br-[75px]`}
           >
             <p
-              className={`text-7xl font-black text-yellow-500`}
+              className={`text-5xl font-black text-yellow-500`}
               style={{
                 textShadow: `3px 3px 0 #000,
                 -1px -1px 0 #000,  
@@ -175,7 +183,7 @@ export const Card = (props: CardProps) => {
               {getText({ type: "shortened" })![0]}
             </p>
             <p
-              className={`text-7xl font-black text-blue-500`}
+              className={`text-5xl font-black text-blue-500`}
               style={{
                 textShadow: `3px 3px 0 #000,
                 -1px -1px 0 #000,  
@@ -187,7 +195,7 @@ export const Card = (props: CardProps) => {
               {getText({ type: "shortened" })![1]}
             </p>
             <p
-              className={`text-7xl font-black text-red-500`}
+              className={`text-5xl font-black text-red-500`}
               style={{
                 textShadow: `3px 3px 0 #000,
                 -1px -1px 0 #000,  
@@ -199,7 +207,7 @@ export const Card = (props: CardProps) => {
               {getText({ type: "shortened" })![2]}
             </p>
             <p
-              className={`text-7xl font-black text-green-500`}
+              className={`text-5xl font-black text-green-500`}
               style={{
                 textShadow: `3px 3px 0 #000,
                 -1px -1px 0 #000,  
