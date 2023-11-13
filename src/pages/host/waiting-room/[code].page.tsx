@@ -18,9 +18,14 @@ const WaitingRoom = () => {
 
   const [players, setPlayers] = useState<Player[]>([]);
 
-  const getInitialPlayers = api.player.getAll.useQuery({
-    roomCode: code,
-  });
+  const getInitialPlayers = api.player.getAll.useQuery(
+    {
+      roomCode: code,
+    },
+    {
+      enabled: !!code,
+    },
+  );
 
   useEffect(() => {
     if (!code) return;
