@@ -22,11 +22,7 @@ export const roomRouter = createTRPCRouter({
       uid,
     });
 
-    return {
-      code,
-      uid,
-      name: "HOST",
-    };
+    return code;
   }),
   join: publicProcedure
     .input(
@@ -49,7 +45,7 @@ export const roomRouter = createTRPCRouter({
       await ctx.db.insert(Player).values({
         name: input.name,
         roomCode: input.code,
-        uid: uid,
+        uid,
       });
 
       return {

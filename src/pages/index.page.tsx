@@ -4,6 +4,7 @@ import { LETTERS } from "~/constants/letters";
 import toast from "react-hot-toast";
 import BaseHead from "~/components/BaseHead";
 import { api } from "~/utils/api";
+import { nanoid } from "nanoid";
 
 const Home = () => {
   const router = useRouter();
@@ -13,12 +14,12 @@ const Home = () => {
   });
 
   const createRoom = api.room.create.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (code) => {
       void router.push({
-        pathname: `/host/waiting-room/${data.code}`,
+        pathname: `/host/waiting-room/${code}`,
         query: {
-          userId: data.uid,
-          name: data.name,
+          userId: nanoid(),
+          name: "HOST",
         },
       });
     },
