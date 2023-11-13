@@ -48,8 +48,7 @@ export const roomRouter = createTRPCRouter({
         roomCode: input.code,
         uid: uid,
       });
-      // TODO turn all of these triggers and things into helpers so we have some typesafety
-      await pusher.trigger(input.code, "room-join", {
+      await pusher.trigger(input.code, "presence-room-join", {
         message: input.code,
         sender: input.name,
         senderUid: uid,
