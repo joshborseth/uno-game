@@ -47,7 +47,7 @@ const SelectColourModal = () => {
             <h1 className="w-full text-center text-xl">Select New Colour.</h1>
             <div className="mask-circle grid h-[200px] w-[200px] grid-cols-2 grid-rows-2 gap-1">
               <button
-                className="h-full w-full bg-red-500 text-red-800"
+                className="h-full w-full rounded-br bg-red-500 text-red-800 hover:scale-110"
                 onClick={() => {
                   handleColorSelect("red");
                 }}
@@ -55,7 +55,7 @@ const SelectColourModal = () => {
                 Red
               </button>
               <button
-                className="h-full w-full bg-green-500 text-green-800"
+                className="h-full w-full rounded-bl bg-green-500 text-green-800 hover:scale-110"
                 onClick={() => {
                   handleColorSelect("green");
                 }}
@@ -63,7 +63,7 @@ const SelectColourModal = () => {
                 Green
               </button>
               <button
-                className="h-full w-full bg-blue-500 text-blue-800"
+                className="h-full w-full rounded-tr bg-blue-500 text-blue-800 hover:scale-110"
                 onClick={() => {
                   handleColorSelect("blue");
                 }}
@@ -71,7 +71,7 @@ const SelectColourModal = () => {
                 Blue
               </button>
               <button
-                className="h-full w-full bg-yellow-500 text-yellow-800"
+                className="h-full w-full rounded-tl bg-yellow-500 text-yellow-800 hover:scale-110"
                 onClick={() => {
                   handleColorSelect("yellow");
                 }}

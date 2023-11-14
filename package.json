@@ -34,7 +34,6 @@
     "react-icons": "^4.11.0",
     "superjson": "^1.13.1",
     "tailwind-merge": "^2.0.0",
-    "useWindowSize": "link:react-use/lib/useWindowSize",
     "zod": "^3.22.4"
   },
   "devDependencies": {
