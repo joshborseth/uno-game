@@ -90,7 +90,7 @@ const Play = () => {
   return (
     <>
       <BaseHead title="UNO - Player" />
-      <main className="flex min-h-screen w-full flex-col flex-wrap items-center justify-between">
+      <main className="flex h-screen w-full flex-col items-center justify-between">
         <div className="w-32" />
         <PickupCard />
         {!!cardHand?.length && (
@@ -124,7 +124,7 @@ export const CardHand = ({
   const userId = router.query.userId as string;
 
   return (
-    <div className="flex h-full w-full gap-4 overflow-hidden">
+    <div className="flex w-screen items-center gap-4 overflow-auto p-10 md:justify-center">
       {cards.map((c) => {
         return (
           <Card

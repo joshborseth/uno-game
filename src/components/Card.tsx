@@ -22,6 +22,7 @@ export const Card = (props: {
   card: RouterOutputs["card"]["retrieveAllForCurrentPlayer"][number];
   handleClick: () => void;
   actionsDisabled: boolean;
+  dontFade?: boolean;
 }) => {
   if (
     !props.card.color &&
@@ -63,8 +64,6 @@ export const Card = (props: {
       return "Draw two";
     }
   };
-
-  const utils = api.useUtils();
 
   // Playing Card Functionality
   const mutation = api.card.playCard.useMutation();
