@@ -55,7 +55,7 @@ const Home = () => {
             <div className="card-body">
               <h3 className="card-title">Host</h3>
               <p className="font-extralight">
-                Host a room to play with others!
+                Host a game to play with others!
               </p>
               <div className="card-actions justify-start">
                 <button
@@ -73,7 +73,7 @@ const Home = () => {
             <div className="card-body flex flex-col gap-6">
               <div>
                 <h2 className="card-title">Player</h2>
-                <p className="font-extralight">Play a room with others!</p>
+                <p className="font-extralight">Play a game with others!</p>
               </div>
               <div className="flex flex-col gap-4">
                 <label htmlFor="name">Player Name:</label>

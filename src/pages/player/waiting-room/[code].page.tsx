@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { type PresenceChannel } from "pusher-js";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import BaseHead from "~/components/BaseHead";
 import { api } from "~/utils/api";
 import { getPusherInstance } from "~/utils/pusher";
 
@@ -31,6 +32,10 @@ const WaitingRoom = () => {
       });
     });
 
+    channel.bind("game-started", () => {
+      void router.push(`/player/play/${code}?userId=${userId}&name=${name}`);
+    });
+
     return () => {
       pusher.unsubscribe(`presence-${code}`);
     };
@@ -39,6 +44,8 @@ const WaitingRoom = () => {
   if (!code || !name || !userId) return null;
 
   return (
+    <>
+      <BaseHead title="UNO - Player Waiting Room" />
     <main className="flex h-screen w-screen flex-wrap items-center justify-center">
       <h1 className="text-5xl font-extrabold">Sit Tight!</h1>
       <h2 className="w-full text-center text-4xl font-bold">

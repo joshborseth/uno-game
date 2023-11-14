@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import { type PusherMember } from "~/types/PusherMember";
 import { PlayerCard } from "~/components/PlayerCard";
 import { getPusherInstance } from "~/utils/pusher";
+import { api } from "~/utils/api";
+import Spinner from "~/components/Spinner";
 
 const WaitingRoom = () => {
   const router = useRouter();
@@ -52,6 +54,23 @@ const WaitingRoom = () => {
       pusher.unsubscribe(`presence-${code}`);
     };
   }, [code, name, userId]);
+
+  const startGameMutation = api.room.startGame.useMutation({
+    onSuccess: () => {
+      toast.success("Game Started!");
+      void router.push({
+        pathname: `/host/play/${code}`,
+        query: {
+          userId: userId,
+          name: name,
+        },
+      });
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
   return (
     <>
       <BaseHead title={`UNO - Room Code: ${code || "Loading..."}`} />
@@ -61,14 +80,25 @@ const WaitingRoom = () => {
             <BackButton />
           </div>
           <h1>Everyone Join!</h1>
-          <h2 className="text-2xl font-normal">Room Code is {code}</h2>
+          <h2 className="text-2xl font-normal">
+            Room Code is:{" "}
+            <span className="text-primary block font-extrabold"> {code}</span>
+          </h2>
           <div className="flex w-full flex-wrap items-center justify-center gap-4 py-4">
             {players.map((p) => (
               <PlayerCard name={p.info.name} key={p.id} />
             ))}
           </div>
           {/* TODO make this redirect us over to the play page */}
-          <button className="btn btn-primary">Everyone In?</button>
+          <button
+            onClick={() => {
+              startGameMutation.mutate({ code: code });
+            }}
+            className="btn btn-primary"
+          >
+            Everyone In?
+            {startGameMutation.isLoading && <Spinner size="sm" />}
+          </button>
         </div>
       </main>
     </>

@@ -71,16 +71,26 @@ export const Card = mysqlTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     deletedAt: timestamp("deletedAt"),
+    roomUid: varchar("roomUid", { length: 255 }).notNull(),
   },
   (table) => {
     return {
       uid: index("uid").on(table.uid),
+      roomUid: index("roomUid").on(table.roomUid),
     };
   },
 );
 
+export const cardRelations = relations(Card, ({ one }) => ({
+  room: one(Room, {
+    fields: [Card.roomUid],
+    references: [Room.uid],
+  }),
+}));
+
 export const roomRelations = relations(Room, ({ many }) => ({
   players: many(Player),
+  cards: many(Card),
 }));
 
 export const playerRelations = relations(Player, ({ one }) => ({
