@@ -13,7 +13,7 @@ const Play = () => {
             { color: "blue", type: "number", num: "3" },
             { color: "blue", type: "number", num: "2" },
             { type: "wild" },
-            { type: "draw4", drawingNew: true },
+            { type: "draw4" },
             { type: "reverse", color: "red" },
             { color: "red", type: "number", num: "2" },
             { color: "blue", type: "number", num: "2" },

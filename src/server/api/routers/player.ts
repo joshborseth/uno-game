@@ -42,24 +42,23 @@ export const playerRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const room = await ctx.db.query.Room.findFirst({
-        where: eq(Room.code, input.code),
+      const players = await ctx.db.query.Player.findMany({
+        where: eq(Player.roomCode, input.code),
         with: {
-          players: true,
+          cards: {
+            columns: {
+              uid: true,
+            },
+          },
         },
       });
-      if (!room) {
+      if (!players) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Room not found",
+          message: "Players not found",
         });
       }
-      if (!room.players.length) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "No players found",
-        });
-      }
-      return room.players;
+
+      return players;
     }),
 });

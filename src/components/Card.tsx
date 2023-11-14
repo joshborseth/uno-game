@@ -64,7 +64,7 @@ export const Card = (props: CardProps) => {
     ? "text-black"
     : textColorMap[props.color];
 
-  const shadowColor = noColorCondition ? "#fff" : "${shadowColor}";
+  const shadowColor = noColorCondition ? "#fff" : "#000";
 
   const heightOfWhite = props.type === "number" ? "h-5/6" : "h-2/3";
   const getText = ({ type }: { type?: "shortened" }) => {
@@ -88,7 +88,7 @@ export const Card = (props: CardProps) => {
   };
 
   return (
-    <button className="relative rounded ring-primary transition-all hover:scale-[1.03] focus:scale-[1.05]">
+    <button className="ring-primary relative rounded transition-all hover:scale-[1.03] focus:scale-[1.05]">
       <div
         className={`no-highlight relative z-50 w-28 rounded-md ${bgTwColor} backface-hidden flex h-40 flex-col items-center justify-center border-2 border-black px-4 transition-all ${animation}`}
         onAnimationEnd={() => {
@@ -132,7 +132,7 @@ export const Card = (props: CardProps) => {
         {props.type === "draw4" && (
           <>
             <div
-              className={`w-full ${heightOfWhite} relative grid grid-cols-2`}
+              className={`w-full ${heightOfWhite} relative -z-10 grid grid-cols-2`}
             >
               <div className="h-full w-full rounded-tl-[75px] bg-red-500" />
               <div className="h-full w-full bg-blue-500" />
