@@ -9,11 +9,6 @@ export const PlayerCard = ({
   selected?: boolean;
   cardsLeft?: number;
 }) => {
-  const randomColor = () => {
-    const colors = ["red", "blue", "green", "yellow"];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
-
   return (
     <div className="flex flex-col items-center text-lg">
       <div
