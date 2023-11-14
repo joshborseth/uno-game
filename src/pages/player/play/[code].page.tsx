@@ -26,10 +26,20 @@ const Play = () => {
       refetchOnReconnect: false,
     },
   );
+  const getAllPlayers = api.player.getAll.useQuery(
+    {
+      code,
+    },
+    {
+      enabled: !!code,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
+  );
 
   useEffect(() => {
     if (!code || !name || !userId) return;
-
     const pusher = getPusherInstance({
       userId: userId,
       userName: name,
@@ -49,6 +59,7 @@ const Play = () => {
         <PickupCard />
         {getInitialCards.data?.length && (
           <CardHand
+            playersInLobby={getAllPlayers.data?.map((p) => p.name) ?? []}
             cardArr={getInitialCards.data.map((c) => {
               return {
                 type: c.type ?? "number",
