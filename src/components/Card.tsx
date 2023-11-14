@@ -3,6 +3,8 @@ import type { COLORS } from "../constants/colors";
 import type { NUMBERS } from "../constants/nums";
 import { BackOfCard } from "./BackOfCard";
 import { useState } from "react";
+import { api } from "~/utils/api";
+import SelectColourModal from "./SelectColourModal";
 
 const bgColorMap = {
   red: "bg-red-500",
@@ -22,7 +24,8 @@ export type CardProps =
   | {
       color: (typeof COLORS)[number];
       num: (typeof NUMBERS)[number];
-      key: string;
+      cardId: string;
+      userId: string;
       type: "number";
       drawingNew?: boolean;
       animationEnd?: () => void;
@@ -31,14 +34,17 @@ export type CardProps =
   | {
       color: (typeof COLORS)[number];
       type: "reverse";
-      key: string;
+      cardId: string;
+      userId: string;
       drawingNew?: boolean;
       animationEnd?: () => void;
       actionsDisabled?: boolean;
     }
   | {
       type: "wild";
-      key: string;
+      wildColor?: (typeof COLORS)[number];
+      cardId: string;
+      userId: string;
       drawingNew?: boolean;
       animationEnd?: () => void;
       actionsDisabled?: boolean;
@@ -46,22 +52,26 @@ export type CardProps =
   | {
       color: (typeof COLORS)[number];
       type: "draw2";
-      key: string;
+      cardId: string;
+      userId: string;
       drawingNew?: boolean;
       animationEnd?: () => void;
       actionsDisabled?: boolean;
     }
   | {
       type: "draw4";
+      wildColor?: (typeof COLORS)[number];
       drawingNew?: boolean;
-      key: string;
+      cardId: string;
+      userId: string;
       animationEnd?: () => void;
       actionsDisabled?: boolean;
     }
   | {
       color: (typeof COLORS)[number];
       type: "skip";
-      key: string;
+      cardId: string;
+      userId: string;
       drawingNew?: boolean;
       animationEnd?: () => void;
       actionsDisabled?: boolean;
@@ -99,13 +109,25 @@ export const Card = (props: CardProps) => {
       return "Draw two";
     }
   };
+  // Playing Card Functionality
+  const mutation = api.card.playCard.useMutation();
+  const handleClick = () => {
+    console.log(props.cardId);
+    mutation.mutate({ playerUid: props.userId, cardUid: props.cardId });
+  };
 
   return (
     <button
       className={twMerge(
-        "ring-primary relative rounded transition-all",
+        "relative rounded ring-primary transition-all",
         props.actionsDisabled ? "pointer-events-none" : "hover:scale-[1.07]",
+        props.type === "wild" &&
+          props.wildColor &&
+          `ring-4 ring-${props.wildColor}-500`,
       )}
+      onClick={() => {
+        handleClick();
+      }}
     >
       <div
         className={`no-highlight relative z-50 w-28 rounded-md ${bgTwColor} backface-hidden flex h-40 flex-col items-center justify-center border-2 border-black px-4 transition-all ${animation}`}
