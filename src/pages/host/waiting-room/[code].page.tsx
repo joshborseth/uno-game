@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { BackButton } from "~/components/BackButton";
 
 import BaseHead from "~/components/BaseHead";
 import { type PresenceChannel } from "pusher-js";
@@ -9,6 +8,7 @@ import { type PusherMember } from "~/types/PusherMember";
 import { PlayerCard } from "~/components/PlayerCard";
 import { getPusherInstance } from "~/utils/pusher";
 import { api } from "~/utils/api";
+
 import Spinner from "~/components/Spinner";
 
 const WaitingRoom = () => {
@@ -18,32 +18,7 @@ const WaitingRoom = () => {
   const userId = router.query.userId as string;
   // subscribe users to the channel
 
-  const { data: initialPlayers } = api.player.getAll.useQuery(
-    { code },
-    {
-      enabled: !!code,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    },
-  );
   const [players, setPlayers] = useState<PusherMember[]>([]);
-
-  useEffect(() => {
-    if (initialPlayers) {
-      setPlayers((prev) => [
-        ...prev,
-        ...initialPlayers.map((p) => {
-          return {
-            id: p.uid!,
-            info: {
-              name: p.name!,
-            },
-          };
-        }),
-      ]);
-    }
-  }, [initialPlayers]);
 
   useEffect(() => {
     if (!code || !name || !userId) return;
@@ -101,9 +76,6 @@ const WaitingRoom = () => {
       <BaseHead title={`UNO - Room Code: ${code || "Loading..."}`} />
       <main className="flex min-h-screen w-screen flex-col items-center justify-center gap-10 text-4xl font-bold">
         <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-4 text-center">
-          <div className="flex w-full justify-start">
-            <BackButton />
-          </div>
           <h1>Everyone Join!</h1>
           <h2 className="text-2xl font-normal">
             Room Code is:{" "}
@@ -117,7 +89,10 @@ const WaitingRoom = () => {
           {/* TODO make this redirect us over to the play page */}
           <button
             onClick={() => {
-              startGameMutation.mutate({ code: code });
+              startGameMutation.mutate({
+                code: code,
+                playerUids: players.map((p) => p.id),
+              });
             }}
             className="btn btn-primary"
           >

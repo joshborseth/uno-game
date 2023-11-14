@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, notInArray, sql } from "drizzle-orm";
 import { Card, Player, Room } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { fourRandomLetters } from "../../helpers/roomCodeGen";
@@ -7,6 +7,7 @@ import { TRPCError } from "@trpc/server";
 import { nanoid } from "nanoid";
 import { pusher } from "~/server/pusher";
 import { COLORS } from "~/constants/colors";
+import { map } from "radash";
 export const roomRouter = createTRPCRouter({
   create: publicProcedure.mutation(async ({ ctx }) => {
     const generateUniqueCode = async (): Promise<string> => {
@@ -108,6 +109,7 @@ export const roomRouter = createTRPCRouter({
     .input(
       z.object({
         code: z.string(),
+        playerUids: z.array(z.string()).nullish(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -124,17 +126,44 @@ export const roomRouter = createTRPCRouter({
           message: "Room not found",
         });
       }
-      if (room.players.length < 2) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Room must have at least 2 players to start the game",
-        });
-      }
 
       if (room.cards.length || room.status === "playing") {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Game has already started",
+        });
+      }
+
+      if (!input.playerUids?.length) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You must have players to start the game.",
+        });
+      }
+
+      await ctx.db
+        .delete(Player)
+        .where(notInArray(Player.uid, input.playerUids));
+
+      const updatedRoom = await ctx.db.query.Room.findFirst({
+        where: eq(Room.code, input.code),
+        with: {
+          players: true,
+          cards: true,
+        },
+      });
+
+      if (!updatedRoom) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Room not found",
+        });
+      }
+
+      if (updatedRoom.players.length < 2) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You must have at least 2 players to start the game.",
         });
       }
 
@@ -253,9 +282,31 @@ export const roomRouter = createTRPCRouter({
 
       await ctx.db.insert(Card).values(finalFormatting);
 
+      await map(room.players, async (player) => {
+        return await map(Array.from({ length: 7 }), async () => {
+          const randomCard = await ctx.db.query.Card.findFirst({
+            orderBy: sql`rand()`,
+            where: and(eq(Card.roomUid, room.uid), isNull(Card.playerUid)),
+          });
+
+          if (!randomCard) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Unable to find random card",
+            });
+          }
+
+          await ctx.db
+            .update(Card)
+            .set({
+              playerUid: player.uid,
+            })
+            .where(eq(Card.uid, randomCard.uid));
+        });
+      });
+
       await pusher.trigger(`presence-${input.code}`, "game-started", {
         message: "Game Started",
       });
-      return;
     }),
 });
