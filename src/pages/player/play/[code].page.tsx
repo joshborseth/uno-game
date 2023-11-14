@@ -124,7 +124,7 @@ export const CardHand = ({
   const userId = router.query.userId as string;
 
   return (
-    <div className="flex gap-4 overflow-x-auto">
+    <div className="flex h-full w-full gap-4 overflow-hidden">
       {cards.map((c) => {
         return (
           <Card
