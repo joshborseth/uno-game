@@ -1,9 +1,4 @@
-import { useEffect, useState } from "react";
-
 export const BackOfCard = ({ animation }: { animation: string }) => {
-  const [backAnimation, setBackAnimation] = useState(
-    "motion-safe:animate-flip-card-back",
-  );
   return (
     <div
       className={`no-highlight absolute left-0 top-0 z-10 h-40 w-28 rounded-md border-2 border-black bg-black p-1 ${animation}`}

@@ -1,5 +1,3 @@
-import { twMerge } from "tailwind-merge";
-
 export const PlayerCard = ({
   name,
   selected,
