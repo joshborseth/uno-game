@@ -20,6 +20,7 @@ export const roomRouter = createTRPCRouter({
     await ctx.db.insert(Room).values({
       code,
       uid,
+      status: "waiting",
     });
 
     return code;
@@ -41,6 +42,14 @@ export const roomRouter = createTRPCRouter({
           message: "Room not found",
         });
       }
+      if (room.status !== "waiting") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "Room is not joinable because the game is either in progress or already completed.",
+        });
+      }
+
       const uid = nanoid();
       await ctx.db.insert(Player).values({
         name: input.name,
@@ -53,5 +62,29 @@ export const roomRouter = createTRPCRouter({
         uid,
         name: input.name,
       };
+    }),
+
+  markRoomAsFinished: publicProcedure
+    .input(
+      z.object({
+        code: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const room = await ctx.db.query.Room.findFirst({
+        where: eq(Room.code, input.code),
+      });
+      if (!room) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Room not found",
+        });
+      }
+      return await ctx.db
+        .update(Room)
+        .set({
+          status: "finished",
+        })
+        .where(eq(Room.code, input.code));
     }),
 });

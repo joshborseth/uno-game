@@ -11,6 +11,7 @@ import { relations, sql } from "drizzle-orm";
 import { CARD_TYPES } from "~/constants/cardTypes";
 import { NUMBERS } from "~/constants/nums";
 import { COLORS } from "~/constants/colors";
+import { STATUSES } from "~/constants/dbEnums/Rooms/status";
 
 export const Room = mysqlTable(
   "Rooms",
@@ -24,6 +25,7 @@ export const Room = mysqlTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     deletedAt: timestamp("deletedAt"),
+    status: mysqlEnum("status", STATUSES),
   },
   (table) => {
     return {

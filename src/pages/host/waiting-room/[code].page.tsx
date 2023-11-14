@@ -5,7 +5,7 @@ import { BackButton } from "~/components/BackButton";
 import BaseHead from "~/components/BaseHead";
 import { type PresenceChannel } from "pusher-js";
 import toast from "react-hot-toast";
-import { type PusherMemberAdded } from "~/types/PusherMemberAdded";
+import { type PusherMember } from "~/types/PusherMemberAdded";
 import { PlayerCard } from "~/components/PlayerCard";
 import { getPusherInstance } from "~/utils/pusher";
 
@@ -16,7 +16,7 @@ const WaitingRoom = () => {
   const userId = router.query.userId as string;
   // subscribe users to the channel
 
-  const [players, setPlayers] = useState<PusherMemberAdded[]>([]);
+  const [players, setPlayers] = useState<PusherMember[]>([]);
 
   useEffect(() => {
     if (!code || !name || !userId) return;
@@ -27,18 +27,22 @@ const WaitingRoom = () => {
     });
     const channel = pusher.subscribe(`presence-${code}`) as PresenceChannel;
     channel.bind("pusher:subscription_succeeded", () => {
-      toast.success("Connection Established");
+      toast.success("Connection Established", {
+        id: "connection-established",
+      });
     });
     channel.bind("pusher:subscription_error", () => {
-      toast.error("There was an error establishing your connection");
+      toast.error("There was an error establishing your connection", {
+        id: "connection-error",
+      });
     });
     // when new users enter
-    channel.bind("pusher:member_added", (members: PusherMemberAdded) => {
+    channel.bind("pusher:member_added", (members: PusherMember) => {
       setPlayers((prev) => [...prev, members]);
     });
 
     //when users leave
-    channel.bind("pusher:member_removed", (members: PusherMemberAdded) => {
+    channel.bind("pusher:member_removed", (members: PusherMember) => {
       setPlayers((prev) => [
         ...prev.filter((player) => player.id !== members.id),
       ]);
@@ -51,7 +55,7 @@ const WaitingRoom = () => {
   return (
     <>
       <BaseHead title={`UNO - Room Code: ${code || "Loading..."}`} />
-      <div className="flex min-h-screen w-screen flex-col items-center justify-center gap-10 text-4xl font-bold">
+      <main className="flex min-h-screen w-screen flex-col items-center justify-center gap-10 text-4xl font-bold">
         <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-4 text-center">
           <div className="flex w-full justify-start">
             <BackButton />
@@ -66,7 +70,7 @@ const WaitingRoom = () => {
           {/* TODO make this redirect us over to the play page */}
           <button className="btn btn-primary">Everyone In?</button>
         </div>
-      </div>
+      </main>
     </>
   );
 };

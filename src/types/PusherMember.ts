@@ -1,4 +1,4 @@
-export type PusherMemberAdded = {
+export type PusherMember = {
   id: string;
   info: {
     name: string;
