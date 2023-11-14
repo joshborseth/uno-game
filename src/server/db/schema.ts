@@ -4,6 +4,7 @@ import {
   varchar,
   mysqlEnum,
   mysqlTable,
+  boolean,
 } from "drizzle-orm/mysql-core";
 
 import { relations, sql } from "drizzle-orm";
@@ -73,6 +74,7 @@ export const Card = mysqlTable(
     deletedAt: timestamp("deletedAt"),
     roomUid: varchar("roomUid", { length: 255 }).notNull(),
     playerUid: varchar("playerUid", { length: 255 }),
+    isCardToMatch: boolean("isCardToMatch").default(false),
   },
   (table) => {
     return {

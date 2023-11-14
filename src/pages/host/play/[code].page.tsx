@@ -25,7 +25,7 @@ const Play: NextPage = () => {
     },
   );
 
-  const getInitialCardToMatch = api.card.drawRandom.useQuery(
+  const getInitialCardToMatch = api.card.drawFirst.useQuery(
     {
       code,
     },
@@ -62,7 +62,7 @@ const Play: NextPage = () => {
           </div>
         )}
         <div className="flex gap-10">
-          {getAllPlayers?.data?.length &&
+          {!!getAllPlayers?.data?.length &&
             getAllPlayers.data.map((player) => (
               <PlayerCard
                 name={player.name ?? ""}
