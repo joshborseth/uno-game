@@ -81,14 +81,16 @@ const Play = () => {
         <PickupCard />
         {getInitialCards.data?.length && (
           <CardHand
-            disabled={!isMyTurn}
+            // disabled={!isMyTurn}
             playersInLobby={getAllPlayers.data?.map((p) => p.name) ?? []}
             cardArr={getInitialCards.data.map((c) => {
               return {
                 type: c.type ?? "number",
                 color: c.color ?? "red",
-                key: c.uid,
+                cardId: c.uid,
+                userId: c.playerUid ?? "card does not belong to anyone",
                 num: c.numberValue ?? "0",
+                wildColor: "red",
               } satisfies CardProps;
             })}
           />

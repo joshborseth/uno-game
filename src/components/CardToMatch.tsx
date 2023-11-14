@@ -11,7 +11,9 @@ export const CardToMatch = ({
       color={card.color ?? "red"}
       type={card.type ?? "number"}
       num={card.numberValue ?? "0"}
-      key={card.uid}
+      cardId={card.uid}
+      userId={""}
+      wildColor={"red"}
       actionsDisabled
     />
   );

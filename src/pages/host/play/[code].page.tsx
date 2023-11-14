@@ -97,7 +97,9 @@ const Play: NextPage = () => {
               />
             ))}
         </div>
-        <Link href="../../../winner">End Game</Link>
+        <Link href="../../../winner" className="p-2 hover:text-red-500">
+          End Game
+        </Link>
       </main>
     </>
   );
@@ -106,5 +108,9 @@ const Play: NextPage = () => {
 export default Play;
 
 export const Title = () => {
-  return <h1 className="text-8xl font-bold uppercase text-black">Uno</h1>;
+  return (
+    <h1 className="text-7xl font-bold uppercase text-primary underline underline-offset-4">
+      Uno
+    </h1>
+  );
 };
