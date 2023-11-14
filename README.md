@@ -1,4 +1,4 @@
-# UNO - (November BCIT Hackathon)
+# UNO - (November UFV Hackathon)
 
 Welcome to the Uno Real-Time Card Game App built with Next.js, Create-T3-App, Tailwind CSS, DaisyUI, Pusher.js, PlanetScale, and DrizzleORM. This project provides a web-based Uno card game with real-time updates and plans for future expansion to include a native frontend using React Native.
 
