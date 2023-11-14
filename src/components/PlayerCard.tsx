@@ -10,7 +10,7 @@ export const PlayerCard = ({
   return (
     <div className="flex flex-col items-center text-lg">
       <div
-        className={` flex h-[100px] w-[100px] items-center justify-center rounded-full border-2 border-accent bg-opacity-60 ${
+        className={`border-accent flex h-[100px] w-[100px] items-center justify-center rounded-full border-2 bg-opacity-60 ${
           selected && "bg-accent"
         } shadow-lg`}
       >

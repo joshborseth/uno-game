@@ -4,6 +4,8 @@ import {
   varchar,
   mysqlEnum,
   mysqlTable,
+  boolean,
+  int,
 } from "drizzle-orm/mysql-core";
 
 import { relations, sql } from "drizzle-orm";
@@ -48,6 +50,8 @@ export const Player = mysqlTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     deletedAt: timestamp("deletedAt"),
+    isPlayersTurn: boolean("isPlayersTurn").default(false),
+    order: int("order").default(0),
   },
   (table) => {
     return {
@@ -73,6 +77,7 @@ export const Card = mysqlTable(
     deletedAt: timestamp("deletedAt"),
     roomUid: varchar("roomUid", { length: 255 }).notNull(),
     playerUid: varchar("playerUid", { length: 255 }),
+    isCardToMatch: boolean("isCardToMatch").default(false),
   },
   (table) => {
     return {

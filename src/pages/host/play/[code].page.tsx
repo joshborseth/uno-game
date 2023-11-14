@@ -2,11 +2,12 @@ import { type NextPage } from "next";
 import { useRouter } from "next/router";
 import BaseHead from "~/components/BaseHead";
 import { PlayerCard } from "~/components/PlayerCard";
-import { api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 import { type PresenceChannel } from "pusher-js";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CardToMatch } from "~/components/CardToMatch";
 import { getPusherInstance } from "~/utils/pusher";
+import Spinner from "~/components/Spinner";
 
 const Play: NextPage = () => {
   const router = useRouter();
@@ -25,7 +26,7 @@ const Play: NextPage = () => {
     },
   );
 
-  const getInitialCardToMatch = api.card.drawRandom.useQuery(
+  const getInitialCardToMatch = api.card.drawFirst.useQuery(
     {
       code,
     },
@@ -38,6 +39,12 @@ const Play: NextPage = () => {
   );
 
   useEffect(() => {
+    if (getInitialCardToMatch.isSuccess) {
+      setCardToMatch(getInitialCardToMatch.data);
+    }
+  }, [getInitialCardToMatch.isSuccess, getInitialCardToMatch.data]);
+
+  useEffect(() => {
     if (!code || !name || !userId) return;
 
     const pusher = getPusherInstance({
@@ -46,23 +53,41 @@ const Play: NextPage = () => {
     });
     const channel = pusher.subscribe(`presence-${code}`) as PresenceChannel;
 
+    channel.bind("card-played", (data: RouterOutputs["card"]["playCard"]) => {
+      if (data) {
+        setCardToMatch(data.card);
+      }
+    });
+
     return () => {
       pusher.unsubscribe(`presence-${code}`);
     };
-  }, [code, name, userId]);
+  }, [code, name, userId, getInitialCardToMatch.data]);
+
+  const [cardToMatch, setCardToMatch] =
+    useState<typeof getInitialCardToMatch.data>();
+
+  if (!cardToMatch || !getAllPlayers.data) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center overflow-hidden">
+        <Spinner size="lg" accent />
+      </div>
+    );
+  }
 
   return (
     <>
       <BaseHead title="UNO - Host" />
-      <main className="flex min-h-screen w-full flex-col items-center justify-end gap-20 py-20">
-        {getInitialCardToMatch.data && (
-          <div className="flex flex-col items-center justify-center gap-10">
-            <h2 className="text-2xl font-bold">Card To Match:</h2>
-            <CardToMatch card={getInitialCardToMatch.data} />
-          </div>
-        )}
+      <main className="flex min-h-screen w-full flex-col items-center justify-end gap-20 pb-20">
+        <Title />
+
+        <div className="flex flex-col items-center justify-center gap-10">
+          <h2 className="text-2xl font-bold">Card To Match:</h2>
+          <CardToMatch card={cardToMatch} />
+        </div>
+
         <div className="flex gap-10">
-          {getAllPlayers?.data?.length &&
+          {!!getAllPlayers?.data?.length &&
             getAllPlayers.data.map((player) => (
               <PlayerCard
                 name={player.name ?? ""}
@@ -77,3 +102,7 @@ const Play: NextPage = () => {
 };
 
 export default Play;
+
+export const Title = () => {
+  return <h1 className="text-8xl font-bold uppercase text-black">Uno</h1>;
+};

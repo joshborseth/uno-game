@@ -7,7 +7,7 @@ import { TRPCError } from "@trpc/server";
 import { nanoid } from "nanoid";
 import { pusher } from "~/server/pusher";
 import { COLORS } from "~/constants/colors";
-import { map } from "radash";
+import { map, shuffle } from "radash";
 export const roomRouter = createTRPCRouter({
   create: publicProcedure.mutation(async ({ ctx }) => {
     const generateUniqueCode = async (): Promise<string> => {
@@ -305,8 +305,78 @@ export const roomRouter = createTRPCRouter({
         });
       });
 
+      const shuffledPlayers = shuffle(room.players);
+      const randomIndexOfShuffledPlayers = Math.floor(
+        Math.random() * shuffledPlayers.length,
+      );
+
+      await map(shuffledPlayers, async (player, index) => {
+        if (index === randomIndexOfShuffledPlayers) {
+          await ctx.db
+            .update(Player)
+            .set({
+              order: index,
+              isPlayersTurn: true,
+            })
+            .where(eq(Player.uid, player.uid));
+        } else {
+          await ctx.db
+            .update(Player)
+            .set({
+              order: index,
+            })
+            .where(eq(Player.uid, player.uid));
+        }
+      });
+
+      const firstCardToMatch = await ctx.db.query.Card.findFirst({
+        orderBy: sql`rand()`,
+        where: and(
+          eq(Card.roomUid, room.uid),
+          isNull(Card.playerUid),
+          eq(Card.type, "number"),
+        ),
+      });
+
+      if (!firstCardToMatch) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Card not found",
+        });
+      }
+
+      await ctx.db
+        .update(Card)
+        .set({
+          isCardToMatch: true,
+        })
+        .where(eq(Card.uid, firstCardToMatch.uid));
+
+      const startingPlayer = await ctx.db.query.Player.findFirst({
+        where: eq(Player.roomCode, input.code),
+        orderBy: sql`rand()`,
+      });
+
+      if (!startingPlayer) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Starting player not found",
+        });
+      }
+
+      await ctx.db
+        .update(Player)
+        .set({
+          isPlayersTurn: true,
+        })
+        .where(eq(Player.uid, startingPlayer.uid));
+
       await pusher.trigger(`presence-${input.code}`, "game-started", {
         message: "Game Started",
+        startingCard: firstCardToMatch,
+        startingPlayer: startingPlayer,
       });
+
+      return firstCardToMatch;
     }),
 });
