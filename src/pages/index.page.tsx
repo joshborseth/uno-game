@@ -8,6 +8,7 @@ import { nanoid } from "nanoid";
 import Spinner from "~/components/Spinner";
 
 const Home = () => {
+  const date = new Date();
   const router = useRouter();
   const [inputState, setInputState] = useState({
     name: "",
@@ -131,6 +132,17 @@ const Home = () => {
           </div>
         </section>
       </main>
+      <footer className="flex h-24 w-full items-center justify-center bg-white shadow-2xl">
+        &copy; {date.getFullYear()}
+        <a href="https://joshborseth.com" className="mx-1 underline">
+          Joshua
+        </a>
+        &
+        <a href="https://jedborseth.com" className="mx-1 underline">
+          Jedsen
+        </a>
+        Borseth <br />
+      </footer>
     </>
   );
 };

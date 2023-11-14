@@ -27,7 +27,11 @@ const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
 
   return (
     <div className="relative bottom-0 flex w-screen gap-1 self-end overflow-auto bg-white p-4 shadow-2xl md:justify-center">
-      {page > 0 && <BackArrow handleBack={handleBack} />}
+      {page > 0 ? (
+        <BackArrow handleBack={handleBack} />
+      ) : (
+        <div className="w-28" />
+      )}
       {sortedCards.map((card, index) => {
         if (index >= page * maxPerPage && index < (page + 1) * maxPerPage) {
           return (
