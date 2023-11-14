@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import CardHand from "~/components/CardHand";
 import PickupCard from "~/components/PickupCard";

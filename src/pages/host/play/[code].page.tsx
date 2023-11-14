@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { CardToMatch } from "~/components/CardToMatch";
 import { getPusherInstance } from "~/utils/pusher";
 import Spinner from "~/components/Spinner";
+import Link from "next/link";
 
 const Play: NextPage = () => {
   const router = useRouter();
@@ -96,6 +97,7 @@ const Play: NextPage = () => {
               />
             ))}
         </div>
+        <Link href="../../../winner">End Game</Link>
       </main>
     </>
   );

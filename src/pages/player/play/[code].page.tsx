@@ -6,6 +6,7 @@ import BaseHead from "~/components/BaseHead";
 import { type CardProps } from "~/components/Card";
 import CardHand from "~/components/CardHand";
 import PickupCard from "~/components/PickupCard";
+import { Player } from "~/server/db/schema";
 import { api } from "~/utils/api";
 import { getPusherInstance } from "~/utils/pusher";
 
@@ -47,9 +48,25 @@ const Play = () => {
     });
     const channel = pusher.subscribe(`presence-${code}`) as PresenceChannel;
 
-    channel.bind("turn-changed", () => {
-      setIsMyTurn(true);
-    });
+    channel.bind(
+      "turn-changed",
+      (data: {
+        oldPlayer: typeof Player.$inferSelect;
+        message: string;
+        newPlayer: typeof Player.$inferSelect;
+      }) => {
+        const { oldPlayer, newPlayer } = data;
+        if (oldPlayer.uid === userId) {
+          setIsMyTurn(false);
+        }
+        if (newPlayer.uid === userId) {
+          setIsMyTurn(true);
+          toast.success("It is your turn!");
+        }
+
+        // setIsMyTurn(true);
+      },
+    );
 
     return () => {
       pusher.unsubscribe(`presence-${code}`);
@@ -61,13 +78,6 @@ const Play = () => {
       <BaseHead title="UNO - Player" />
       <main className="flex min-h-screen w-full flex-col flex-wrap items-center justify-between">
         <div className="w-32" />
-        <button
-          onClick={() => {
-            setIsMyTurn(!isMyTurn);
-          }}
-        >
-          change turn test btn
-        </button>
         <PickupCard />
         {getInitialCards.data?.length && (
           <CardHand
