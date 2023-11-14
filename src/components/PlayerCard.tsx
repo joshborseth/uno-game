@@ -9,11 +9,6 @@ export const PlayerCard = ({
   selected?: boolean;
   cardsLeft?: number;
 }) => {
-  const randomColor = () => {
-    const colors = ["red", "blue", "green", "yellow"];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
-
   return (
     <div className="flex flex-col items-center text-lg">
       <div
@@ -24,13 +19,7 @@ export const PlayerCard = ({
         <p className="uppercase">{name[0]}</p>
       </div>
 
-      <p className="font-normal">
-        {name.toLowerCase().includes("boomshakalaka") ? (
-          <span className={`bg-${randomColor()}-500`}>{name}</span>
-        ) : (
-          name
-        )}
-      </p>
+      <p className="font-normal">{name}</p>
       {cardsLeft && (
         <div>
           <div className="flex gap-[2px]">
