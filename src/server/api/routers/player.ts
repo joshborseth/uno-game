@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Player, Room } from "../../db/schema";
+import { Player } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
