@@ -1,7 +1,7 @@
-export const BackOfCard = ({ animation }: { animation: string }) => {
+export const BackOfCard = () => {
   return (
     <div
-      className={`no-highlight absolute left-0 top-0 z-10 h-40 w-28 rounded-md border-2 border-black bg-black p-1 ${animation}`}
+      className={`no-highlight absolute left-0 top-0 z-10 h-40 w-28 rounded-md border-2 border-black bg-black p-1`}
     >
       <div className="relative h-full w-full border-2 border-white p-1">
         <div className="-ml-2 -mt-6 flex h-full w-full -rotate-12 flex-col items-center justify-center text-4xl font-bold uppercase text-white">

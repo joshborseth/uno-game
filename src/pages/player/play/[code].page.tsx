@@ -3,11 +3,10 @@ import { type PresenceChannel } from "pusher-js";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import BaseHead from "~/components/BaseHead";
-import { type CardProps } from "~/components/Card";
-import CardHand from "~/components/CardHand";
+import { Card } from "~/components/Card";
 import PickupCard from "~/components/PickupCard";
 import { type Player } from "~/server/db/schema";
-import { api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 import { getPusherInstance } from "~/utils/pusher";
 
 const Play = () => {
@@ -62,6 +61,7 @@ const Play = () => {
         message: string;
         newPlayer: typeof Player.$inferSelect;
       }) => {
+        alert("turn changed");
         const { oldPlayer, newPlayer } = data;
         if (oldPlayer.uid === userId) {
           setIsMyTurn(false);
@@ -78,26 +78,26 @@ const Play = () => {
     };
   }, [code, name, userId]);
 
+  const [cardHand, setCardHand] =
+    useState<RouterOutputs["card"]["retrieveAllForCurrentPlayer"]>();
+
+  useEffect(() => {
+    if (getInitialCards.data?.length) {
+      setCardHand(getInitialCards.data);
+    }
+  }, [getInitialCards.data]);
+
   return (
     <>
       <BaseHead title="UNO - Player" />
       <main className="flex min-h-screen w-full flex-col flex-wrap items-center justify-between">
         <div className="w-32" />
         <PickupCard />
-        {getInitialCards.data?.length && (
+        {!!cardHand?.length && (
           <CardHand
-            // disabled={!isMyTurn}
-            playersInLobby={getAllPlayers.data?.map((p) => p.name) ?? []}
-            cardArr={getInitialCards.data.map((c) => {
-              return {
-                type: c.type ?? "number",
-                color: c.color ?? "red",
-                cardId: c.uid,
-                userId: c.playerUid ?? "card does not belong to anyone",
-                num: c.numberValue ?? "0",
-                wildColor: "red",
-              } satisfies CardProps;
-            })}
+            cards={cardHand}
+            setCardHand={setCardHand}
+            disabled={!isMyTurn}
           />
         )}
       </main>
@@ -106,3 +106,52 @@ const Play = () => {
 };
 
 export default Play;
+
+export const CardHand = ({
+  cards,
+  setCardHand,
+  disabled,
+}: {
+  cards: RouterOutputs["card"]["retrieveAllForCurrentPlayer"];
+  disabled: boolean;
+  setCardHand: (
+    cards: RouterOutputs["card"]["retrieveAllForCurrentPlayer"],
+  ) => void;
+}) => {
+  const playCardMutation = api.card.playCard.useMutation();
+
+  const router = useRouter();
+  const userId = router.query.userId as string;
+
+  return (
+    <div className="flex gap-4 overflow-x-auto">
+      {cards.map((c) => {
+        return (
+          <Card
+            card={{
+              ...c,
+            }}
+            key={c.uid}
+            actionsDisabled={disabled}
+            handleClick={() =>
+              playCardMutation.mutate(
+                { playerUid: userId, cardUid: c.uid },
+                {
+                  onError: (error) => {
+                    toast.error(error.message);
+                  },
+                  onSuccess: () => {
+                    const newCardHand = cards.filter(
+                      (card) => card.uid !== c.uid,
+                    );
+                    setCardHand(newCardHand);
+                  },
+                },
+              )
+            }
+          />
+        );
+      })}
+    </div>
+  );
+};

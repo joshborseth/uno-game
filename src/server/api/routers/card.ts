@@ -177,6 +177,13 @@ export const cardRouter = createTRPCRouter({
         });
       }
 
+      if (!card.player?.isPlayersTurn) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "It is not your turn",
+        });
+      }
+
       const cardToMatch = await ctx.db.query.Card.findFirst({
         where: and(
           eq(Card.roomUid, card.roomUid),
