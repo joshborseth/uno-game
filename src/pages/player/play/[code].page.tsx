@@ -8,11 +8,7 @@ const Play = () => {
       <BaseHead title="UNO - Player" />
       <main className="flex  min-h-screen w-full flex-wrap items-center justify-center">
         <PickupCard />
-        <CardHand
-          cardArr={[
-            { color: "blue", type: "number", num: "3", drawingNew: true },
-          ]}
-        />
+        <CardHand cardArr={[]} />
       </main>
     </>
   );
