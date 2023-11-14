@@ -40,11 +40,13 @@ const WaitingRoom = () => {
 
   return (
     <main className="flex h-screen w-screen flex-wrap items-center justify-center">
-      <h1 className="text-5xl">Sit Tight!</h1>
-      <h2 className="w-full text-center text-4xl">
-        Your Name: <span className="text-primary">{name}</span>
+      <h1 className="text-5xl font-extrabold">Sit Tight!</h1>
+      <h2 className="w-full text-center text-4xl font-bold">
+        Your Name: <span className="text-primary font-black">{name}</span>
       </h2>
-      <Link href="/">Change Name?</Link>
+      <Link href="/" className="underline">
+        Change Name?
+      </Link>
     </main>
   );
 };
