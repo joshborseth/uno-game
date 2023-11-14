@@ -28,6 +28,9 @@ export const Room = mysqlTable(
       .notNull(),
     deletedAt: timestamp("deletedAt"),
     status: mysqlEnum("status", STATUSES),
+    orderStatus: mysqlEnum("orderStatus", ["normal", "reverse"]).default(
+      "normal",
+    ),
   },
   (table) => {
     return {
