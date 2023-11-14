@@ -22,7 +22,7 @@ export const Card = (props: {
   card: RouterOutputs["card"]["retrieveAllForCurrentPlayer"][number];
   handleClick: () => void;
   actionsDisabled: boolean;
-  dontFade?: boolean;
+  disableMouseEvents?: boolean;
 }) => {
   if (
     !props.card.color &&
@@ -72,7 +72,10 @@ export const Card = (props: {
     <button
       className={twMerge(
         "ring-primary relative rounded transition-all",
-        props.actionsDisabled ? "pointer-events-none" : "hover:scale-[1.07]",
+        props.actionsDisabled
+          ? "pointer-events-none opacity-40"
+          : "hover:scale-[1.07]",
+        props.disableMouseEvents && "pointer-events-none",
         props.card.type === "wild" &&
           props.card.wildColor &&
           `ring-4 ring-${props.card.wildColor}-500`,
