@@ -23,29 +23,35 @@ export type CardProps =
       num: (typeof NUMBERS)[number];
       type: "number";
       drawingNew?: boolean;
+      animationEnd?: () => void;
     }
   | {
       color: (typeof COLORS)[number];
       type: "reverse";
       drawingNew?: boolean;
+      animationEnd?: () => void;
     }
   | {
       type: "wild";
       drawingNew?: boolean;
+      animationEnd?: () => void;
     }
   | {
       color: (typeof COLORS)[number];
       type: "draw2";
       drawingNew?: boolean;
+      animationEnd?: () => void;
     }
   | {
       type: "draw4";
       drawingNew?: boolean;
+      animationEnd?: () => void;
     }
   | {
       color: (typeof COLORS)[number];
       type: "skip";
       drawingNew?: boolean;
+      animationEnd?: () => void;
     };
 
 export const Card = (props: CardProps) => {
@@ -85,7 +91,10 @@ export const Card = (props: CardProps) => {
     <button className="relative rounded ring-primary transition-all hover:scale-[1.03] focus:scale-[1.05]">
       <div
         className={`no-highlight relative z-50 w-28 rounded-md ${bgTwColor} backface-hidden flex h-40 flex-col items-center justify-center border-2 border-black px-4 transition-all ${animation}`}
-        onAnimationEnd={() => setAnimation("")}
+        onAnimationEnd={() => {
+          setAnimation("");
+          if (props.animationEnd) props.animationEnd();
+        }}
         onDoubleClick={() => setAnimation("motion-safe:animate-flip-card")}
       >
         <p

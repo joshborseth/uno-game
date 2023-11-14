@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { type PresenceChannel } from "pusher-js";
 import { useEffect } from "react";
@@ -32,8 +33,12 @@ const WaitingRoom = () => {
   }, [code, name, userId]);
   if (!code || !name || !userId) return router.push("/");
   return (
-    <main className="flex h-screen w-screen items-center justify-center">
+    <main className="flex h-screen w-screen flex-wrap items-center justify-center">
       <h1 className="text-5xl">Sit Tight!</h1>
+      <h2 className="w-full text-center text-4xl">
+        Your Name: <span className="text-primary">{name}</span>
+      </h2>
+      <Link href="/">Change Name?</Link>
     </main>
   );
 };

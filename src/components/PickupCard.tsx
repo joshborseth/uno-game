@@ -1,7 +1,7 @@
 const PickupCard = () => {
   return (
     <button
-      className="translate-z stack translate-x-14"
+      className="translate-z stack translate-x-14 shadow-2xl"
       onClick={() => {
         console.log("new Card PLease");
       }}
