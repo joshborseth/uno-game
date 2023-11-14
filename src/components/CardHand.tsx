@@ -37,15 +37,16 @@ const CardHand = ({
 
   return (
     <>
-      <button
+      {/* <button
         className="btn btn-primary z-30 w-32"
         onClick={() => {
           handleModalClick();
         }}
       >
+      CALL UNO FUNCTIONALITY IS NOT IMPLEMENTED YET!!!!!
         CALL UNO
-      </button>
-      <dialog ref={modalRef} className="modal">
+      </button> */}
+      {/* <dialog ref={modalRef} className="modal">
         <div className="modal-box [&>*:nth-child(odd)]:bg-gray-300">
           {playersInLobby.map((player, index) => {
             if (player === currentPlayer) return null;
@@ -69,7 +70,7 @@ const CardHand = ({
         <form method="dialog" className="modal-backdrop">
           <button>Close</button>
         </form>
-      </dialog>
+      </dialog> */}
       <div
         className={`relative bottom-0 flex w-screen gap-1 self-end overflow-auto bg-white p-4 shadow-2xl md:justify-center ${
           !!disabled && "cursor-not-allowed"
@@ -81,7 +82,7 @@ const CardHand = ({
               className={`flex justify-center ${
                 !!disabled && "pointer-events-none opacity-25"
               }`}
-              key={card.key}
+              key={card.cardId}
             >
               <Card {...card} animationEnd={handleNewCardAnimation} />
             </div>
