@@ -5,8 +5,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  // Will Rate Limit to 20 requests per minute
-  const ratelimit = rateLimiter({ amount: 25, time: "1m" });
+  // Will Rate Limit to 25 requests per every 5 minutes
+  const ratelimit = rateLimiter({ amount: 25, time: "5m" });
 
   const { success } = await ratelimit.limit(req.body.userId as string);
   if (!success) throw new Error("Too Many Requests");
