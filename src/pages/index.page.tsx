@@ -47,11 +47,11 @@ const Home = () => {
   return (
     <>
       <BaseHead />
-      <main className="flex min-h-screen flex-col items-center justify-center gap-10">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-10 py-10">
         <h1 className="pb-10 text-7xl font-black">Uno</h1>
 
         <section className="flex w-full flex-col items-center justify-center gap-10 px-4 sm:flex-row sm:items-start">
-          <div className="card bg-primary-content border-primary flex flex-col gap-4 border shadow-xl">
+          <div className="card flex flex-col gap-4 border border-primary bg-primary-content shadow-xl">
             <div className="card-body">
               <h3 className="card-title">Host</h3>
               <p className="font-extralight">
@@ -69,7 +69,7 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="card bg-primary-content border-primary border shadow-xl">
+          <div className="card border border-primary bg-primary-content shadow-xl">
             <div className="card-body flex flex-col gap-6">
               <div>
                 <h2 className="card-title">Player</h2>
