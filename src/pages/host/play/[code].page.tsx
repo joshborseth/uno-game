@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { CardToMatch } from "~/components/CardToMatch";
 import { getPusherInstance } from "~/utils/pusher";
 import Spinner from "~/components/Spinner";
-import Link from "next/link";
 
 const Play: NextPage = () => {
   const router = useRouter();
@@ -97,8 +96,6 @@ const Play: NextPage = () => {
               />
             ))}
         </div>
-        {/* <Link href="../../../winner">End Game</Link> */}
-
       </main>
     </>
   );
@@ -108,7 +105,7 @@ export default Play;
 
 export const Title = () => {
   return (
-    <h1 className="text-7xl font-bold uppercase text-primary underline underline-offset-4">
+    <h1 className="text-primary text-7xl font-bold uppercase underline underline-offset-4">
       Uno
     </h1>
   );
