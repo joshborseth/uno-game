@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Player } from "../../db/schema";
+import { Player, Room } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
@@ -34,5 +34,32 @@ export const playerRouter = createTRPCRouter({
       }
 
       return player;
+    }),
+  getAll: publicProcedure
+    .input(
+      z.object({
+        code: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const room = await ctx.db.query.Room.findFirst({
+        where: eq(Room.code, input.code),
+        with: {
+          players: true,
+        },
+      });
+      if (!room) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Room not found",
+        });
+      }
+      if (!room.players.length) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No players found",
+        });
+      }
+      return room.players;
     }),
 });

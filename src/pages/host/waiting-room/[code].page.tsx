@@ -18,7 +18,32 @@ const WaitingRoom = () => {
   const userId = router.query.userId as string;
   // subscribe users to the channel
 
+  const { data: initialPlayers } = api.player.getAll.useQuery(
+    { code },
+    {
+      enabled: !!code,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
+  );
   const [players, setPlayers] = useState<PusherMember[]>([]);
+
+  useEffect(() => {
+    if (initialPlayers) {
+      setPlayers((prev) => [
+        ...prev,
+        ...initialPlayers.map((p) => {
+          return {
+            id: p.uid!,
+            info: {
+              name: p.name!,
+            },
+          };
+        }),
+      ]);
+    }
+  }, [initialPlayers]);
 
   useEffect(() => {
     if (!code || !name || !userId) return;
