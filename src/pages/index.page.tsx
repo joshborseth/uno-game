@@ -49,7 +49,7 @@ const Home = () => {
     <>
       <BaseHead />
       <main className="flex min-h-screen flex-col items-center justify-center gap-10 py-10">
-        <h1 className="font- pb-10 text-7xl">Uno</h1>
+        <h1 className="pb-10 text-7xl font-black">Uno</h1>
 
         <section className="flex w-full flex-col items-center justify-center gap-10 px-4 sm:flex-row sm:items-start">
           <div className="card border-primary bg-primary-content flex flex-col gap-4 border shadow-xl">
