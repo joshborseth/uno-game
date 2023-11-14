@@ -61,7 +61,8 @@ const WaitingRoom = () => {
       void router.push({
         pathname: `/host/play/${code}`,
         query: {
-          ...router.query,
+          userId: userId,
+          name: name,
         },
       });
     },
