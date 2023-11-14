@@ -8,13 +8,12 @@ export const CardToMatch = ({
 }) => {
   return (
     <Card
-      color={card.color ?? "red"}
-      type={card.type ?? "number"}
-      num={card.numberValue ?? "0"}
-      cardId={card.uid}
-      userId={""}
-      wildColor={"red"}
-      actionsDisabled
+      card={{
+        ...card,
+      }}
+      key={card.uid}
+      actionsDisabled={false}
+      handleClick={() => null}
     />
   );
 };
