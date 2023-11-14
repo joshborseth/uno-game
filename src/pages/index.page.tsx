@@ -115,7 +115,7 @@ const Home = () => {
                   onClick={() => {
                     if (!inputState.name || !inputState.code)
                       return toast.error("Please fill out all fields", {
-                        id: "join-room-error",
+                        id: "missing-fields",
                       });
                     joinRoom.mutate({
                       ...inputState,
