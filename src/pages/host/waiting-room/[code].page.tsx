@@ -107,7 +107,7 @@ const WaitingRoom = () => {
           <h1>Everyone Join!</h1>
           <h2 className="text-2xl font-normal">
             Room Code is:{" "}
-            <span className="text-primary block font-extrabold"> {code}</span>
+            <span className="block font-extrabold text-primary"> {code}</span>
           </h2>
           <div className="flex w-full flex-wrap items-center justify-center gap-4 py-4">
             {players.map((p) => (
