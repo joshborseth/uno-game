@@ -79,8 +79,6 @@ const Play: NextPage = () => {
     <>
       <BaseHead title="UNO - Host" />
       <main className="flex min-h-screen w-full flex-col items-center justify-end gap-20 pb-20">
-        <Title />
-
         <div className="flex flex-col items-center justify-center gap-10">
           <h2 className="text-2xl font-bold">Card To Match:</h2>
           <CardToMatch card={cardToMatch} />

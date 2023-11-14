@@ -305,13 +305,8 @@ export const roomRouter = createTRPCRouter({
         });
       });
 
-      const shuffledPlayers = shuffle(room.players);
-      const randomIndexOfShuffledPlayers = Math.floor(
-        Math.random() * shuffledPlayers.length,
-      );
-
-      await map(shuffledPlayers, async (player, index) => {
-        if (index === randomIndexOfShuffledPlayers) {
+      await map(room.players, async (player, index) => {
+        if (index === 0) {
           await ctx.db
             .update(Player)
             .set({
