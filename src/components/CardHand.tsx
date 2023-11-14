@@ -3,9 +3,16 @@ import { Card } from "./Card";
 import type { CardProps } from "./Card";
 import { useRouter } from "next/router";
 
-const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
+const CardHand = ({
+  cardArr,
+  playersInLobby,
+  disabled,
+}: {
+  cardArr: CardProps[];
+  playersInLobby: (string | null)[];
+  disabled?: boolean;
+}) => {
   const router = useRouter();
-  const playersInLobby = ["player1", "player2", "player3", "player4"];
   const currentPlayer = router.query.name as string;
   // TODO: Change playersInLobby to be a list of players in the lobby
 
@@ -31,7 +38,7 @@ const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
   return (
     <>
       <button
-        className="btn btn-accent z-30 w-32"
+        className="btn btn-primary z-30 w-32"
         onClick={() => {
           handleModalClick();
         }}
@@ -48,6 +55,8 @@ const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
                 key={index}
                 onClick={() => {
                   console.log("Called Uno On", player);
+
+                  //  TODO: CALL UNO ON FUNCTIONALITY
                   modalRef.current?.close();
                 }}
                 className="flex h-10 w-full cursor-pointer items-center px-2 hover:underline"
@@ -61,10 +70,19 @@ const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
           <button>Close</button>
         </form>
       </dialog>
-      <div className="relative bottom-0 flex w-screen gap-1 self-end overflow-auto bg-white p-4 shadow-2xl md:justify-center">
-        {sortedCards.map((card, index) => {
+      <div
+        className={`relative bottom-0 flex w-screen gap-1 self-end overflow-auto bg-white p-4 shadow-2xl md:justify-center ${
+          !!disabled && "cursor-not-allowed"
+        }`}
+      >
+        {sortedCards.map((card) => {
           return (
-            <div className="flex justify-center" key={index}>
+            <div
+              className={`flex justify-center ${
+                !!disabled && "pointer-events-none opacity-25"
+              }`}
+              key={card.key}
+            >
               <Card {...card} animationEnd={handleNewCardAnimation} />
             </div>
           );
