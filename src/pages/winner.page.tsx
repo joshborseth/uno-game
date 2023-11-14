@@ -11,7 +11,6 @@ const Winner = ({ winner }: { winner: string }) => {
     setWidth(width);
   }, []);
 
-  if (!winner) return "Nobody won, get off this page";
   return (
     <>
       <BaseHead />

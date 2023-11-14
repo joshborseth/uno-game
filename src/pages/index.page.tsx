@@ -132,7 +132,11 @@ const Home = () => {
           </div>
         </section>
       </main>
-      <footer className="flex h-24 w-full items-center justify-center bg-white shadow-2xl">
+      <footer
+        className="flex h-24 w-full items-center justify-center bg-white shadow-2xl"
+        aria-label="Masthead"
+      >
+        {/* https://tinyurl.com/5n87d5cf */}
         &copy; {date.getFullYear()}
         <a href="https://joshborseth.com" className="mx-1 underline">
           Joshua
@@ -142,6 +146,7 @@ const Home = () => {
           Jedsen
         </a>
         Borseth <br />
+        {/* https://tinyurl.com/5n87d5cf */}
       </footer>
     </>
   );
