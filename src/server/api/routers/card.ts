@@ -1,4 +1,4 @@
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { Card, Room } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
@@ -42,15 +42,18 @@ export const cardRouter = createTRPCRouter({
         });
       }
 
-      const randomCard = await ctx.db.query.Card.findFirst({
-        orderBy: sql`rand()`,
-        where: and(eq(Card.roomUid, room.uid), isNull(Card.playerUid)),
+      const cardToMatch = await ctx.db.query.Card.findFirst({
+        where: and(
+          eq(Card.roomUid, room.uid),
+          isNull(Card.playerUid),
+          eq(Card.isCardToMatch, true),
+        ),
       });
 
-      if (!randomCard) {
+      if (!cardToMatch) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Card not found",
+          message: "Card to match not found. Oof this is bad...",
         });
       }
 
@@ -59,14 +62,14 @@ export const cardRouter = createTRPCRouter({
         .set({
           isCardToMatch: true,
         })
-        .where(eq(Card.uid, randomCard.uid));
+        .where(eq(Card.uid, cardToMatch.uid));
 
       await pusher.trigger(`presence-${input.code}`, "initial-card-drawn", {
         message: "Initial Card Drawn",
-        card: randomCard,
+        card: cardToMatch,
       });
 
-      return randomCard;
+      return cardToMatch;
     }),
   playCard: publicProcedure
     .input(
@@ -104,7 +107,8 @@ export const cardRouter = createTRPCRouter({
       if (!cardToMatch) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Card to match not found. Oof this is bad...",
+          message:
+            "Card to match not found. Oof this is bad... This should never happen...",
         });
       }
 
@@ -137,19 +141,20 @@ export const cardRouter = createTRPCRouter({
       if (card.type === "wild" || card.type === "draw4") {
         const result = await playCard();
 
-        await pusher.trigger(`presence-${card.room.code}`, "card-played", {
-          message: "Card Played",
-          card: result,
-          player: card.player,
-          room: card.room,
-        });
-
-        return {
+        const response = {
           message: "Card Played",
           card: result,
           player: card.player,
           room: card.room,
         };
+
+        await pusher.trigger(
+          `presence-${card.room.code}`,
+          "card-played",
+          response,
+        );
+
+        return response;
       }
 
       if (card.type === "number") {
@@ -159,19 +164,20 @@ export const cardRouter = createTRPCRouter({
         ) {
           const result = await playCard();
 
-          await pusher.trigger(`presence-${card.room.code}`, "card-played", {
-            message: "Card Played",
-            card: result,
-            player: card.player,
-            room: card.room,
-          });
-
-          return {
+          const response = {
             message: "Card Played",
             card: result,
             player: card.player,
             room: card.room,
           };
+
+          await pusher.trigger(
+            `presence-${card.room.code}`,
+            "card-played",
+            response,
+          );
+
+          return response;
         } else {
           throw new TRPCError({
             code: "FORBIDDEN",
@@ -191,19 +197,20 @@ export const cardRouter = createTRPCRouter({
         ) {
           const result = await playCard();
 
-          await pusher.trigger(`presence-${card.room.code}`, "card-played", {
-            message: "Card Played",
-            card: result,
-            player: card.player,
-            room: card.room,
-          });
-
-          return {
+          const response = {
             message: "Card Played",
             card: result,
             player: card.player,
             room: card.room,
           };
+
+          await pusher.trigger(
+            `presence-${card.room.code}`,
+            "card-played",
+            response,
+          );
+
+          return response;
         } else {
           throw new TRPCError({
             code: "FORBIDDEN",
