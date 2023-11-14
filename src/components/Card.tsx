@@ -1,3 +1,4 @@
+import { twMerge } from "tailwind-merge";
 import type { COLORS } from "../constants/colors";
 import type { NUMBERS } from "../constants/nums";
 import { BackOfCard } from "./BackOfCard";
@@ -21,37 +22,49 @@ export type CardProps =
   | {
       color: (typeof COLORS)[number];
       num: (typeof NUMBERS)[number];
+      key: string;
       type: "number";
       drawingNew?: boolean;
       animationEnd?: () => void;
+      actionsDisabled?: boolean;
     }
   | {
       color: (typeof COLORS)[number];
       type: "reverse";
+      key: string;
       drawingNew?: boolean;
       animationEnd?: () => void;
+      actionsDisabled?: boolean;
     }
   | {
       type: "wild";
+      key: string;
       drawingNew?: boolean;
       animationEnd?: () => void;
+      actionsDisabled?: boolean;
     }
   | {
       color: (typeof COLORS)[number];
       type: "draw2";
+      key: string;
       drawingNew?: boolean;
       animationEnd?: () => void;
+      actionsDisabled?: boolean;
     }
   | {
       type: "draw4";
       drawingNew?: boolean;
+      key: string;
       animationEnd?: () => void;
+      actionsDisabled?: boolean;
     }
   | {
       color: (typeof COLORS)[number];
       type: "skip";
+      key: string;
       drawingNew?: boolean;
       animationEnd?: () => void;
+      actionsDisabled?: boolean;
     };
 
 export const Card = (props: CardProps) => {
@@ -88,14 +101,18 @@ export const Card = (props: CardProps) => {
   };
 
   return (
-    <button className="ring-primary relative rounded transition-all hover:scale-[1.03] focus:scale-[1.05]">
+    <button
+      className={twMerge(
+        "ring-primary relative rounded transition-all",
+        props.actionsDisabled ? "pointer-events-none" : "hover:scale-[1.07]",
+      )}
+    >
       <div
         className={`no-highlight relative z-50 w-28 rounded-md ${bgTwColor} backface-hidden flex h-40 flex-col items-center justify-center border-2 border-black px-4 transition-all ${animation}`}
         onAnimationEnd={() => {
           setAnimation("");
           if (props.animationEnd) props.animationEnd();
         }}
-        onDoubleClick={() => setAnimation("motion-safe:animate-flip-card")}
       >
         <p
           className={`${
