@@ -5,7 +5,7 @@ import { BackButton } from "~/components/BackButton";
 import BaseHead from "~/components/BaseHead";
 import { type PresenceChannel } from "pusher-js";
 import toast from "react-hot-toast";
-import { type PusherMember } from "~/types/PusherMemberAdded";
+import { type PusherMember } from "~/types/PusherMember";
 import { PlayerCard } from "~/components/PlayerCard";
 import { getPusherInstance } from "~/utils/pusher";
 
@@ -61,10 +61,7 @@ const WaitingRoom = () => {
             <BackButton />
           </div>
           <h1>Everyone Join!</h1>
-          <h2 className="text-2xl font-normal">
-            Room Code is:{" "}
-            <span className="block font-extrabold text-primary"> {code}</span>
-          </h2>
+          <h2 className="text-2xl font-normal">Room Code is {code}</h2>
           <div className="flex w-full flex-wrap items-center justify-center gap-4 py-4">
             {players.map((p) => (
               <PlayerCard name={p.info.name} key={p.id} />
