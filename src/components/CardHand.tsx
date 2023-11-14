@@ -6,7 +6,6 @@ import { BsArrowRightSquareFill, BsArrowLeftSquareFill } from "react-icons/bs";
 const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
   const [page, setPage] = useState(0);
   const maxPerPage = 5;
-
   const sortedCards = cardArr.sort((a, b) => {
     // New Card will always be at the start of the hand
     // Everything else is sorted by color or type if it's a wild card
@@ -22,15 +21,18 @@ const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
   const handleBack = () => {
     setPage(page - 1);
   };
+  const handleNewCardAnimation = () => {
+    console.log("this runs and end of new card animation");
+  };
 
   return (
-    <div className="relative bottom-0 flex w-screen gap-1 overflow-auto bg-white p-4 md:justify-center">
+    <div className="relative bottom-0 flex w-screen gap-1 self-end overflow-auto bg-white p-4 shadow-2xl md:justify-center">
       {page > 0 && <BackArrow handleBack={handleBack} />}
       {sortedCards.map((card, index) => {
         if (index >= page * maxPerPage && index < (page + 1) * maxPerPage) {
           return (
             <div className="flex justify-center" key={index}>
-              <Card {...card} />
+              <Card {...card} animationEnd={handleNewCardAnimation} />
             </div>
           );
         }

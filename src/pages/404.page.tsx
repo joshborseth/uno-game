@@ -6,7 +6,7 @@ const Page404 = () => {
       <h1 className="text-[11rem] font-extrabold tracking-widest text-primary">
         404
       </h1>
-      <div className="absolute rotate-12 rounded bg-secondary px-4 py-2 text-sm">
+      <div className="absolute rotate-12 rounded border border-black bg-secondary px-20 py-2 text-sm font-bold">
         Page Not Found
       </div>
       <button className="mt-5">

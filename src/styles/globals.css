@@ -17,3 +17,7 @@
 main {
   @apply bg-slate-100;
 }
+
+.translate-z {
+  transform: rotate3d(2, 1, 2, 308deg);
+}

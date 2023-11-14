@@ -1,9 +1,24 @@
 import { useRouter } from "next/router";
+import BaseHead from "~/components/BaseHead";
+import CardHand from "~/components/CardHand";
+import PickupCard from "~/components/PickupCard";
 
 const Play = () => {
   const router = useRouter();
+  const code = router.query.code as string;
+
   return (
-    <div className="flex min-h-screen w-screen flex-wrap items-center justify-center gap-2"></div>
+    <>
+      <BaseHead title={`UNO - ${code ?? ""}`} />
+      <main className="flex  min-h-screen w-full flex-wrap items-center justify-center">
+        <PickupCard />
+        <CardHand
+          cardArr={[
+            { color: "blue", type: "number", num: "3", drawingNew: true },
+          ]}
+        />
+      </main>
+    </>
   );
 };
 

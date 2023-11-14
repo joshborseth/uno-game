@@ -1,9 +1,11 @@
 import React from "react";
 import CardHand from "~/components/CardHand";
+import PickupCard from "~/components/PickupCard";
 
 const ThemeTesting = () => {
   return (
     <div className="flex min-h-screen w-full flex-wrap items-end justify-center">
+      <PickupCard />
       <CardHand
         cardArr={[
           { color: "blue", type: "number", num: "3" },
