@@ -6,9 +6,11 @@ import { useRouter } from "next/router";
 const CardHand = ({
   cardArr,
   playersInLobby,
+  disabled,
 }: {
   cardArr: CardProps[];
   playersInLobby: (string | null)[];
+  disabled?: boolean;
 }) => {
   const router = useRouter();
   const currentPlayer = router.query.name as string;
@@ -68,10 +70,19 @@ const CardHand = ({
           <button>Close</button>
         </form>
       </dialog>
-      <div className="relative bottom-0 flex w-screen gap-1 self-end overflow-auto bg-white p-4 shadow-2xl md:justify-center">
+      <div
+        className={`relative bottom-0 flex w-screen gap-1 self-end overflow-auto bg-white p-4 shadow-2xl md:justify-center ${
+          !!disabled && "cursor-not-allowed"
+        }`}
+      >
         {sortedCards.map((card) => {
           return (
-            <div className="flex justify-center" key={card.key}>
+            <div
+              className={`flex justify-center ${
+                !!disabled && "pointer-events-none opacity-25"
+              }`}
+              key={card.key}
+            >
               <Card {...card} animationEnd={handleNewCardAnimation} />
             </div>
           );
