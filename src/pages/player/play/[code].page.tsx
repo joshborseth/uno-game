@@ -6,7 +6,7 @@ const Play = () => {
   return (
     <>
       <BaseHead title="UNO - Player" />
-      <main className="flex  min-h-screen w-full flex-wrap items-center justify-center">
+      <main className="flex min-h-screen w-full flex-wrap items-center justify-center">
         <PickupCard />
         <CardHand
           cardArr={[

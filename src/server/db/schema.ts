@@ -72,6 +72,7 @@ export const Card = mysqlTable(
       .notNull(),
     deletedAt: timestamp("deletedAt"),
     roomUid: varchar("roomUid", { length: 255 }).notNull(),
+    playerUid: varchar("playerUid", { length: 255 }),
   },
   (table) => {
     return {
@@ -86,6 +87,10 @@ export const cardRelations = relations(Card, ({ one }) => ({
     fields: [Card.roomUid],
     references: [Room.uid],
   }),
+  player: one(Player, {
+    fields: [Card.playerUid],
+    references: [Player.uid],
+  }),
 }));
 
 export const roomRelations = relations(Room, ({ many }) => ({
@@ -93,9 +98,10 @@ export const roomRelations = relations(Room, ({ many }) => ({
   cards: many(Card),
 }));
 
-export const playerRelations = relations(Player, ({ one }) => ({
+export const playerRelations = relations(Player, ({ one, many }) => ({
   room: one(Room, {
     fields: [Player.roomCode],
     references: [Room.code],
   }),
+  cards: many(Card),
 }));
