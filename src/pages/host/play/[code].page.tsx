@@ -97,9 +97,8 @@ const Play: NextPage = () => {
               />
             ))}
         </div>
-        <Link href="../../../winner" className="p-2 hover:text-red-500">
-          End Game
-        </Link>
+        {/* <Link href="../../../winner">End Game</Link> */}
+
       </main>
     </>
   );
