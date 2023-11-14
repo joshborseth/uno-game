@@ -81,6 +81,7 @@ export const Card = mysqlTable(
     roomUid: varchar("roomUid", { length: 255 }).notNull(),
     playerUid: varchar("playerUid", { length: 255 }),
     isCardToMatch: boolean("isCardToMatch").default(false),
+    wildColor: mysqlEnum("wildColor", COLORS),
   },
   (table) => {
     return {
