@@ -6,7 +6,7 @@ import BaseHead from "~/components/BaseHead";
 import { type CardProps } from "~/components/Card";
 import CardHand from "~/components/CardHand";
 import PickupCard from "~/components/PickupCard";
-import { Player } from "~/server/db/schema";
+import { type Player } from "~/server/db/schema";
 import { api } from "~/utils/api";
 import { getPusherInstance } from "~/utils/pusher";
 
@@ -41,6 +41,13 @@ const Play = () => {
   );
 
   useEffect(() => {
+    const findMe = getAllPlayers.data?.find((p) => p.uid === userId);
+    if (findMe?.isPlayersTurn) {
+      setIsMyTurn(true);
+    }
+  }, [getAllPlayers.data, userId]);
+
+  useEffect(() => {
     if (!code || !name || !userId) return;
     const pusher = getPusherInstance({
       userId: userId,
@@ -63,8 +70,6 @@ const Play = () => {
           setIsMyTurn(true);
           toast.success("It is your turn!");
         }
-
-        // setIsMyTurn(true);
       },
     );
 

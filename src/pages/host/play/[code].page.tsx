@@ -97,7 +97,7 @@ const Play: NextPage = () => {
               />
             ))}
         </div>
-        <Link href="../../../winner">End Game</Link>
+        {/* <Link href="../../../winner">End Game</Link> */}
       </main>
     </>
   );
