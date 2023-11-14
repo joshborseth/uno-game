@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Card } from "./Card";
 import type { CardProps } from "./Card";
 import { BsArrowRightSquareFill, BsArrowLeftSquareFill } from "react-icons/bs";
+import { useRouter } from "next/router";
 
 const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
+  const router = useRouter();
   const playersInLobby = ["player1", "player2", "player3", "player4"];
-
+  const currentPlayer = router.query.name as string;
   // TODO: Change playersInLobby to be a list of players in the lobby
 
   const [page, setPage] = useState(0);
@@ -27,6 +29,11 @@ const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
   };
   const handleNewCardAnimation = () => {
     console.log("this runs and end of new card animation");
+    // TODO: remove the new card prop from users hand
+  };
+  const modalRef = useRef<HTMLDialogElement | null>(null);
+  const handleModalClick = () => {
+    modalRef.current?.showModal();
   };
 
   return (
@@ -34,20 +41,22 @@ const CardHand = ({ cardArr }: { cardArr: CardProps[] }) => {
       <button
         className="btn btn-primary absolute left-0 right-0 top-10 z-30 m-auto w-32"
         onClick={() => {
-          const modal = document.getElementById("modalId") as HTMLDialogElement;
-          modal?.showModal();
+          handleModalClick();
         }}
       >
         CALL UNO
       </button>
-      <dialog id="modalId" className="modal">
+      <dialog ref={modalRef} className="modal">
         <div className="modal-box [&>*:nth-child(odd)]:bg-gray-300">
           {playersInLobby.map((player, index) => {
+            if (player === currentPlayer) return null;
+            // Cannot call uno on self
             return (
               <div
                 key={index}
                 onClick={() => {
                   console.log("Called Uno On", player);
+                  modalRef.current?.close();
                 }}
                 className="flex h-10 w-full cursor-pointer items-center px-2 hover:underline"
               >
