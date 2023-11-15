@@ -70,9 +70,6 @@ dependencies:
   tailwind-merge:
     specifier: ^2.0.0
     version: 2.0.0
-  useWindowSize:
-    specifier: link:react-use/lib/useWindowSize
-    version: link:react-use/lib/useWindowSize
   zod:
     specifier: ^3.22.4
     version: 3.22.4
