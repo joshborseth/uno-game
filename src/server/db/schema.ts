@@ -18,7 +18,7 @@ import { STATUSES } from "~/constants/dbEnums/Rooms/status";
 export const Room = mysqlTable(
   "Rooms",
   {
-    uid: varchar("uid", { length: 255 }).notNull().unique(),
+    uid: varchar("uid", { length: 255 }).notNull().unique().primaryKey(),
     code: varchar("code", { length: 4 }).unique(),
     createdAt: timestamp("createdAt")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -43,7 +43,7 @@ export const Room = mysqlTable(
 export const Player = mysqlTable(
   "Players",
   {
-    uid: varchar("uid", { length: 255 }).notNull().unique(),
+    uid: varchar("uid", { length: 255 }).notNull().unique().primaryKey(),
     name: varchar("name", { length: 255 }),
     roomCode: varchar("roomCode", { length: 4 }).notNull(),
     createdAt: timestamp("createdAt")
@@ -67,7 +67,7 @@ export const Player = mysqlTable(
 export const Card = mysqlTable(
   "Cards",
   {
-    uid: varchar("uid", { length: 255 }).notNull().unique(),
+    uid: varchar("uid", { length: 255 }).notNull().unique().primaryKey(),
     color: mysqlEnum("color", COLORS),
     type: mysqlEnum("type", CARD_TYPES),
     numberValue: mysqlEnum("numberValue", NUMBERS),

@@ -52,7 +52,7 @@ const Home = () => {
         <h1 className="pb-10 text-7xl font-black">Uno</h1>
 
         <section className="flex w-full flex-col items-center justify-center gap-10 px-4 sm:flex-row sm:items-start">
-          <div className="card border-primary bg-primary-content flex flex-col gap-4 border shadow-xl">
+          <div className="card flex flex-col gap-4 border border-primary bg-primary-content shadow-xl">
             <div className="card-body">
               <h3 className="card-title">Host</h3>
               <p className="font-extralight">
@@ -70,7 +70,19 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="card border-primary bg-primary-content border shadow-xl">
+          <form
+            className="card border border-primary bg-primary-content shadow-xl"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!inputState.name || !inputState.code)
+                return toast.error("Please fill out all fields", {
+                  id: "missing-fields",
+                });
+              joinRoom.mutate({
+                ...inputState,
+              });
+            }}
+          >
             <div className="card-body flex flex-col gap-6">
               <div>
                 <h2 className="card-title">Player</h2>
@@ -112,24 +124,13 @@ const Home = () => {
                 />
               </div>
               <div className="card-actions justify-start">
-                <button
-                  onClick={() => {
-                    if (!inputState.name || !inputState.code)
-                      return toast.error("Please fill out all fields", {
-                        id: "missing-fields",
-                      });
-                    joinRoom.mutate({
-                      ...inputState,
-                    });
-                  }}
-                  className="btn btn-primary"
-                >
+                <button type="submit" className="btn btn-primary">
                   Select
                   {joinRoom.isLoading && <Spinner size="sm" />}
                 </button>
               </div>
             </div>
-          </div>
+          </form>
         </section>
       </main>
       <footer
