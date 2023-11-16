@@ -61,7 +61,9 @@ const Play = () => {
         }
         if (newPlayer.uid === userId) {
           setIsMyTurn(true);
-          toast.success("It is your turn!");
+          toast.success("It is your turn!", {
+            id: "your-turn",
+          });
         }
       },
     );
@@ -123,7 +125,9 @@ export const CardHand = ({
                 { playerUid: userId, cardUid: c.uid },
                 {
                   onError: (error) => {
-                    toast.error(error.message);
+                    toast.error(error.message, {
+                      id: error.message,
+                    });
                   },
                   onSuccess: () => {
                     void utils.card.retrieveAllForCurrentPlayer.invalidate();

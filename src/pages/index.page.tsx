@@ -25,7 +25,9 @@ const Home = () => {
       });
     },
     onError: (err) => {
-      toast.error(err.message);
+      toast.error(err.message, {
+        id: err.message,
+      });
     },
   });
 
@@ -40,7 +42,9 @@ const Home = () => {
       });
     },
     onError: (err) => {
-      toast.error(err.message);
+      toast.error(err.message, {
+        id: err.message,
+      });
     },
   });
 

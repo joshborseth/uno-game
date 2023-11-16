@@ -57,7 +57,9 @@ const WaitingRoom = () => {
 
   const startGameMutation = api.room.startGame.useMutation({
     onSuccess: () => {
-      toast.success("Game Started!");
+      toast.success("Game Started!", {
+        id: "game-started",
+      });
       void router.push({
         pathname: `/host/play/${code}`,
         query: {
@@ -67,7 +69,9 @@ const WaitingRoom = () => {
       });
     },
     onError: (err) => {
-      toast.error(err.message);
+      toast.error(err.message, {
+        id: err.message,
+      });
     },
   });
 
@@ -79,7 +83,7 @@ const WaitingRoom = () => {
           <h1>Everyone Join!</h1>
           <h2 className="text-2xl font-normal">
             Room Code is:{" "}
-            <span className="block font-extrabold text-primary"> {code}</span>
+            <span className="text-primary block font-extrabold"> {code}</span>
           </h2>
           <div className="flex w-full flex-wrap items-center justify-center gap-4 py-4">
             {players.map((p) => (
