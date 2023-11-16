@@ -78,20 +78,21 @@ const Play: NextPage = () => {
   return (
     <>
       <BaseHead title="UNO - Host" />
-      <main className="flex min-h-screen w-full flex-col items-center justify-end gap-20 pb-20">
+      <main className="flex min-h-screen w-full flex-col items-center justify-end gap-12 pb-20">
         <div className="flex flex-col items-center justify-center gap-10">
           <h2 className="text-2xl font-bold">Card To Match:</h2>
           <CardToMatch card={cardToMatch} />
         </div>
 
-        <div className="flex gap-10">
+        <div className="flex w-full justify-center">
           {!!getAllPlayers?.data?.length &&
             getAllPlayers.data.map((player) => (
-              <PlayerCard
-                name={player.name ?? ""}
-                key={player.uid}
-                cardsLeft={player.cards.length}
-              />
+              <div className="w-[10%] py-4" key={player.uid}>
+                <PlayerCard
+                  name={player.name ?? ""}
+                  cardsLeft={player.cards.length}
+                />
+              </div>
             ))}
         </div>
       </main>

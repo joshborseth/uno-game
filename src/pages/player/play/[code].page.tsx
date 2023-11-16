@@ -22,9 +22,6 @@ const Play = () => {
     },
     {
       enabled: !!userId,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
     },
   );
   const getAllPlayers = api.player.getAll.useQuery(
@@ -33,18 +30,15 @@ const Play = () => {
     },
     {
       enabled: !!code,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
     },
   );
+  const findMe = getAllPlayers.data?.find((p) => p.uid === userId);
 
   useEffect(() => {
-    const findMe = getAllPlayers.data?.find((p) => p.uid === userId);
     if (findMe?.isPlayersTurn) {
       setIsMyTurn(true);
     }
-  }, [getAllPlayers.data, userId]);
+  }, [getAllPlayers.data, userId, findMe]);
 
   useEffect(() => {
     if (!code || !name || !userId) return;
@@ -61,7 +55,6 @@ const Play = () => {
         message: string;
         newPlayer: typeof Player.$inferSelect;
       }) => {
-        alert("turn changed");
         const { oldPlayer, newPlayer } = data;
         if (oldPlayer.uid === userId) {
           setIsMyTurn(false);
@@ -94,11 +87,7 @@ const Play = () => {
         <div className="w-32" />
         <PickupCard />
         {!!cardHand?.length && (
-          <CardHand
-            cards={cardHand}
-            setCardHand={setCardHand}
-            disabled={!isMyTurn}
-          />
+          <CardHand cards={cardHand} disabled={!isMyTurn} />
         )}
       </main>
     </>
@@ -109,20 +98,16 @@ export default Play;
 
 export const CardHand = ({
   cards,
-  setCardHand,
   disabled,
 }: {
   cards: RouterOutputs["card"]["retrieveAllForCurrentPlayer"];
   disabled: boolean;
-  setCardHand: (
-    cards: RouterOutputs["card"]["retrieveAllForCurrentPlayer"],
-  ) => void;
 }) => {
   const playCardMutation = api.card.playCard.useMutation();
 
   const router = useRouter();
   const userId = router.query.userId as string;
-
+  const utils = api.useUtils();
   return (
     <div className="flex w-screen items-center gap-4 overflow-auto p-10 md:justify-center">
       {cards.map((c) => {
@@ -141,10 +126,7 @@ export const CardHand = ({
                     toast.error(error.message);
                   },
                   onSuccess: () => {
-                    const newCardHand = cards.filter(
-                      (card) => card.uid !== c.uid,
-                    );
-                    setCardHand(newCardHand);
+                    void utils.card.retrieveAllForCurrentPlayer.invalidate();
                   },
                 },
               )

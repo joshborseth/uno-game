@@ -552,7 +552,7 @@ const findNextPlayer = async ({
   roomCode: string;
   cardType: (typeof CARD_TYPES)[number];
 }) => {
-  if (!allPlayersInRoom.length || !player?.order) {
+  if (!allPlayersInRoom.length || (!player?.order && player.order !== 0)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: "Something went wrong",
@@ -606,7 +606,7 @@ const findNextPlayer = async ({
   } else {
     if (cardType === "skip") {
       findNextPlayer =
-        allPlayersInRoom.length === player.order - 1 //if they are at the end of the order of the users
+        allPlayersInRoom.length - 1 === player.order
           ? await db.query.Player.findFirst({
               where: and(eq(Player.roomCode, roomCode), eq(Player.order, 1)),
             })
@@ -618,7 +618,7 @@ const findNextPlayer = async ({
             });
     } else {
       findNextPlayer =
-        allPlayersInRoom.length === player.order - 1
+        allPlayersInRoom.length - 1 === player.order
           ? await db.query.Player.findFirst({
               where: and(eq(Player.roomCode, roomCode), eq(Player.order, 0)),
             })

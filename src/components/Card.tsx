@@ -1,6 +1,4 @@
-// eslint-disable-file @typescript-eslint/no-unsafe-return
 import { twMerge } from "tailwind-merge";
-import { BackOfCard } from "./BackOfCard";
 import { type RouterOutputs, api } from "~/utils/api";
 import Spinner from "./Spinner";
 
@@ -24,23 +22,14 @@ export const Card = (props: {
   actionsDisabled: boolean;
   disableMouseEvents?: boolean;
 }) => {
-  if (
-    !props.card.color &&
-    props.card.type !== "wild" &&
-    props.card.type !== "draw4"
-  )
-    return null;
-
   const noColorCondition =
     props.card.type === "wild" || props.card.type === "draw4";
   const bgTwColor = noColorCondition
     ? "bg-black"
-    : //@ts-expect-error this is fine
-      bgColorMap[props.card.color];
+    : bgColorMap[props.card.color!];
   const textTwColor = noColorCondition
     ? "text-black"
-    : // @ts-expect-error - this is fine
-      textColorMap[props.card.color];
+    : textColorMap[props.card.color!];
 
   const shadowColor = noColorCondition ? "#fff" : "#000";
 
@@ -224,7 +213,6 @@ export const Card = (props: {
                   {getText({ type: "shortened" })![3]}
                 </p>
               </div>
-              <BackOfCard />
             </>
           )}
         </div>

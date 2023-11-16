@@ -20,10 +20,10 @@ export const PlayerCard = ({
       <p className="font-normal">{name}</p>
       {cardsLeft && (
         <div>
-          <div className="flex gap-[2px]">
-            {Array.from({ length: cardsLeft ?? 0 }).map(
-              (_, i) => i < 10 && <MiniCard key={i} />,
-            )}
+          <div className="flex flex-wrap gap-[2px]">
+            {Array.from({ length: cardsLeft ?? 0 }).map((_, i) => (
+              <MiniCard key={i} />
+            ))}
             <p
               className={`text-xs ${
                 cardsLeft === 1 && "text-md font-extrabold text-yellow-500"
@@ -41,9 +41,6 @@ export const PlayerCard = ({
 const MiniCard = () => {
   return (
     <span className="no-highlight mask mask-half-1 flex h-4 w-3 items-center justify-center border border-gray-300 bg-black text-center text-[4px] text-white">
-      {/* <span className="text-red-500">U</span>
-      <span className="text-green-500">N</span>
-      <span className="text-blue-500">O</span> */}
       UNO
     </span>
   );
