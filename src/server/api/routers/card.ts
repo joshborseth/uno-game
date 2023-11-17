@@ -28,7 +28,7 @@ export const cardRouter = createTRPCRouter({
 
       return cards;
     }),
-  drawFirst: publicProcedure
+  getCurrentCardToMatch: publicProcedure
     .input(
       z.object({
         code: z.string(),
@@ -54,26 +54,42 @@ export const cardRouter = createTRPCRouter({
         ),
       });
 
-      if (!cardToMatch) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Card to match not found. Oof this is bad...",
+      if (cardToMatch) {
+        return cardToMatch;
+      } else {
+        const firstCardToMatch = await ctx.db.query.Card.findFirst({
+          orderBy: sql`rand()`,
+          where: and(
+            eq(Card.roomUid, room.uid),
+            isNull(Card.playerUid),
+            eq(Card.type, "number"),
+          ),
         });
+
+        if (!firstCardToMatch) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Card not found",
+          });
+        }
+
+        await ctx.db
+          .update(Card)
+          .set({
+            isCardToMatch: true,
+          })
+          .where(eq(Card.uid, firstCardToMatch.uid));
+
+        const updatedFirstCardToMatch = await ctx.db.query.Card.findFirst({
+          where: and(
+            eq(Card.roomUid, room.uid),
+            isNull(Card.playerUid),
+            eq(Card.isCardToMatch, true),
+          ),
+        });
+
+        return updatedFirstCardToMatch;
       }
-
-      await ctx.db
-        .update(Card)
-        .set({
-          isCardToMatch: true,
-        })
-        .where(eq(Card.uid, cardToMatch.uid));
-
-      await pusher.trigger(`presence-${input.code}`, "initial-card-drawn", {
-        message: "Initial Card Drawn",
-        card: cardToMatch,
-      });
-
-      return cardToMatch;
     }),
 
   chooseColor: publicProcedure
@@ -294,7 +310,7 @@ export const cardRouter = createTRPCRouter({
         } else {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Card does not match.",
+            message: "Card does not match!",
           });
         }
       }
@@ -368,7 +384,7 @@ export const cardRouter = createTRPCRouter({
         } else {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Card does not match.",
+            message: "Card does not match!",
           });
         }
       }

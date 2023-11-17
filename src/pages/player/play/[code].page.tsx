@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
 import { type PresenceChannel } from "pusher-js";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { twMerge } from "tailwind-merge";
 import BaseHead from "~/components/BaseHead";
 import { Card } from "~/components/Card";
 import PickupCard from "~/components/PickupCard";
@@ -14,9 +15,8 @@ const Play = () => {
   const userId = router.query.userId as string;
   const code = router.query.code as string;
   const name = router.query.name as string;
-  const [isMyTurn, setIsMyTurn] = useState(false);
-
-  const getInitialCards = api.card.retrieveAllForCurrentPlayer.useQuery(
+  const utils = api.useUtils();
+  const cardsForCurrentPlayer = api.card.retrieveAllForCurrentPlayer.useQuery(
     {
       playerUid: userId,
     },
@@ -35,12 +35,6 @@ const Play = () => {
   const findMe = getAllPlayers.data?.find((p) => p.uid === userId);
 
   useEffect(() => {
-    if (findMe?.isPlayersTurn) {
-      setIsMyTurn(true);
-    }
-  }, [getAllPlayers.data, userId, findMe]);
-
-  useEffect(() => {
     if (!code || !name || !userId) return;
     const pusher = getPusherInstance({
       userId: userId,
@@ -51,45 +45,37 @@ const Play = () => {
     channel.bind(
       "turn-changed",
       (data: {
-        oldPlayer: typeof Player.$inferSelect;
-        message: string;
+        message: "Turn Switched";
         newPlayer: typeof Player.$inferSelect;
+        oldPlayer: typeof Player.$inferSelect;
       }) => {
-        const { oldPlayer, newPlayer } = data;
-        if (oldPlayer.uid === userId) {
-          setIsMyTurn(false);
+        if (data.newPlayer.uid === userId) {
+          toast("It's your turn!");
         }
-        if (newPlayer.uid === userId) {
-          setIsMyTurn(true);
-          toast.success("It is your turn!", {
-            id: "your-turn",
-          });
-        }
+        void utils.player.getAll.invalidate();
       },
     );
 
     return () => {
       pusher.unsubscribe(`presence-${code}`);
     };
-  }, [code, name, userId]);
-
-  const [cardHand, setCardHand] =
-    useState<RouterOutputs["card"]["retrieveAllForCurrentPlayer"]>();
-
-  useEffect(() => {
-    if (getInitialCards.data?.length) {
-      setCardHand(getInitialCards.data);
-    }
-  }, [getInitialCards.data]);
+  }, [code, name, userId, utils.player.getAll]);
 
   return (
     <>
       <BaseHead title="UNO - Player" />
-      <main className="flex h-screen w-full flex-col items-center justify-between">
+      <main
+        className={twMerge(
+          "flex h-screen w-full flex-col items-center justify-between",
+        )}
+      >
         <div className="w-32" />
         <PickupCard />
-        {!!cardHand?.length && (
-          <CardHand cards={cardHand} disabled={!isMyTurn} />
+        {!!cardsForCurrentPlayer.data?.length && (
+          <CardHand
+            cards={cardsForCurrentPlayer.data}
+            disabled={!findMe?.isPlayersTurn}
+          />
         )}
       </main>
     </>
@@ -105,11 +91,6 @@ export const CardHand = ({
   cards: RouterOutputs["card"]["retrieveAllForCurrentPlayer"];
   disabled: boolean;
 }) => {
-  const playCardMutation = api.card.playCard.useMutation();
-
-  const router = useRouter();
-  const userId = router.query.userId as string;
-  const utils = api.useUtils();
   return (
     <div className="flex w-screen items-center gap-4 overflow-auto p-10 md:justify-center">
       {cards.map((c) => {
@@ -120,21 +101,6 @@ export const CardHand = ({
             }}
             key={c.uid}
             actionsDisabled={disabled}
-            handleClick={() =>
-              playCardMutation.mutate(
-                { playerUid: userId, cardUid: c.uid },
-                {
-                  onError: (error) => {
-                    toast.error(error.message, {
-                      id: error.message,
-                    });
-                  },
-                  onSuccess: () => {
-                    void utils.card.retrieveAllForCurrentPlayer.invalidate();
-                  },
-                },
-              )
-            }
           />
         );
       })}

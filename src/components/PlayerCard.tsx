@@ -1,18 +1,21 @@
+import { twMerge } from "tailwind-merge";
+
 export const PlayerCard = ({
   name,
-  selected,
   cardsLeft,
+  isPlayersTurn,
 }: {
   name: string;
-  selected?: boolean;
   cardsLeft?: number;
+  isPlayersTurn: boolean | null;
 }) => {
   return (
     <div className="flex flex-col items-center text-lg">
       <div
-        className={`border-accent flex h-[100px] w-[100px] items-center justify-center rounded-full border-2 bg-opacity-60 ${
-          selected && "bg-accent"
-        } shadow-lg`}
+        className={twMerge(
+          "flex h-[45px] w-[45px] items-center justify-center rounded-full border-2 border-primary bg-opacity-60 shadow-lg xl:h-[85px] xl:w-[85px]",
+          isPlayersTurn && "animate-bounce",
+        )}
       >
         <p className="uppercase">{name[0]}</p>
       </div>
