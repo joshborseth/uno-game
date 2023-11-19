@@ -14,7 +14,6 @@ export const CardToMatch = ({
       key={card.uid}
       actionsDisabled={false}
       disableMouseEvents={true}
-      handleClick={() => null}
     />
   );
 };
