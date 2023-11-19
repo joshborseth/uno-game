@@ -10,12 +10,14 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       <Toaster
         position="bottom-right"
         toastOptions={{
-          duration: 3000,
+          duration: 1500,
           position: "top-center",
           style: {
-            border: "1px solid #713200",
-            padding: "1rem",
-            color: "#713200",
+            fontWeight: 600,
+          },
+          iconTheme: {
+            primary: "white",
+            secondary: "black",
           },
         }}
       />

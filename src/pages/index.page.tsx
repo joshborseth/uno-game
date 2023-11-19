@@ -8,7 +8,6 @@ import { nanoid } from "nanoid";
 import Spinner from "~/components/Spinner";
 
 const Home = () => {
-  const date = new Date();
   const router = useRouter();
   const [inputState, setInputState] = useState({
     name: "",
@@ -26,7 +25,9 @@ const Home = () => {
       });
     },
     onError: (err) => {
-      toast.error(err.message);
+      toast.error(err.message, {
+        id: err.message,
+      });
     },
   });
 
@@ -41,7 +42,9 @@ const Home = () => {
       });
     },
     onError: (err) => {
-      toast.error(err.message);
+      toast.error(err.message, {
+        id: err.message,
+      });
     },
   });
 
@@ -49,7 +52,7 @@ const Home = () => {
     <>
       <BaseHead />
       <main className="flex min-h-screen flex-col items-center justify-center gap-10 py-10">
-        <h1 className="pb-10 text-7xl font-black">Uno</h1>
+        <h1 className="pb-10 text-7xl font-black text-primary">Uno</h1>
 
         <section className="flex w-full flex-col items-center justify-center gap-10 px-4 sm:flex-row sm:items-start">
           <div className="card flex flex-col gap-4 border border-primary bg-primary-content shadow-xl">
@@ -71,7 +74,6 @@ const Home = () => {
           </div>
 
           <form
-            className="card border border-primary bg-primary-content shadow-xl"
             onSubmit={(e) => {
               e.preventDefault();
               if (!inputState.name || !inputState.code)
@@ -82,6 +84,7 @@ const Home = () => {
                 ...inputState,
               });
             }}
+            className="card border border-primary bg-primary-content shadow-xl"
           >
             <div className="card-body flex flex-col gap-6">
               <div>
@@ -133,22 +136,6 @@ const Home = () => {
           </form>
         </section>
       </main>
-      <footer
-        className="flex h-24 w-full items-center justify-center bg-white shadow-2xl"
-        aria-label="Masthead"
-      >
-        {/* https://tinyurl.com/5n87d5cf */}
-        &copy; {date.getFullYear()}
-        <a href="https://joshborseth.com" className="mx-1 underline">
-          Joshua
-        </a>
-        &
-        <a href="https://jedborseth.com" className="mx-1 underline">
-          Jedsen
-        </a>
-        Borseth <br />
-        {/* https://tinyurl.com/5n87d5cf */}
-      </footer>
     </>
   );
 };

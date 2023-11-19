@@ -28,7 +28,7 @@ export const cardRouter = createTRPCRouter({
 
       return cards;
     }),
-  drawFirst: publicProcedure
+  getCurrentCardToMatch: publicProcedure
     .input(
       z.object({
         code: z.string(),
@@ -54,26 +54,42 @@ export const cardRouter = createTRPCRouter({
         ),
       });
 
-      if (!cardToMatch) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Card to match not found. Oof this is bad...",
+      if (cardToMatch) {
+        return cardToMatch;
+      } else {
+        const firstCardToMatch = await ctx.db.query.Card.findFirst({
+          orderBy: sql`rand()`,
+          where: and(
+            eq(Card.roomUid, room.uid),
+            isNull(Card.playerUid),
+            eq(Card.type, "number"),
+          ),
         });
+
+        if (!firstCardToMatch) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Card not found",
+          });
+        }
+
+        await ctx.db
+          .update(Card)
+          .set({
+            isCardToMatch: true,
+          })
+          .where(eq(Card.uid, firstCardToMatch.uid));
+
+        const updatedFirstCardToMatch = await ctx.db.query.Card.findFirst({
+          where: and(
+            eq(Card.roomUid, room.uid),
+            isNull(Card.playerUid),
+            eq(Card.isCardToMatch, true),
+          ),
+        });
+
+        return updatedFirstCardToMatch;
       }
-
-      await ctx.db
-        .update(Card)
-        .set({
-          isCardToMatch: true,
-        })
-        .where(eq(Card.uid, cardToMatch.uid));
-
-      await pusher.trigger(`presence-${input.code}`, "initial-card-drawn", {
-        message: "Initial Card Drawn",
-        card: cardToMatch,
-      });
-
-      return cardToMatch;
     }),
 
   chooseColor: publicProcedure
@@ -294,7 +310,7 @@ export const cardRouter = createTRPCRouter({
         } else {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Card does not match.",
+            message: "Card does not match!",
           });
         }
       }
@@ -368,7 +384,7 @@ export const cardRouter = createTRPCRouter({
         } else {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Card does not match.",
+            message: "Card does not match!",
           });
         }
       }
@@ -552,7 +568,7 @@ const findNextPlayer = async ({
   roomCode: string;
   cardType: (typeof CARD_TYPES)[number];
 }) => {
-  if (!allPlayersInRoom.length || !player?.order) {
+  if (!allPlayersInRoom.length || (!player?.order && player.order !== 0)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: "Something went wrong",
@@ -606,7 +622,7 @@ const findNextPlayer = async ({
   } else {
     if (cardType === "skip") {
       findNextPlayer =
-        allPlayersInRoom.length === player.order - 1 //if they are at the end of the order of the users
+        allPlayersInRoom.length - 1 === player.order
           ? await db.query.Player.findFirst({
               where: and(eq(Player.roomCode, roomCode), eq(Player.order, 1)),
             })
@@ -618,7 +634,7 @@ const findNextPlayer = async ({
             });
     } else {
       findNextPlayer =
-        allPlayersInRoom.length === player.order - 1
+        allPlayersInRoom.length - 1 === player.order
           ? await db.query.Player.findFirst({
               where: and(eq(Player.roomCode, roomCode), eq(Player.order, 0)),
             })

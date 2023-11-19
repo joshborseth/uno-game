@@ -7,7 +7,7 @@ import { TRPCError } from "@trpc/server";
 import { nanoid } from "nanoid";
 import { pusher } from "~/server/pusher";
 import { COLORS } from "~/constants/colors";
-import { map, shuffle } from "radash";
+import { map } from "radash";
 export const roomRouter = createTRPCRouter({
   create: publicProcedure.mutation(async ({ ctx }) => {
     const generateUniqueCode = async (): Promise<string> => {
@@ -45,6 +45,9 @@ export const roomRouter = createTRPCRouter({
 
       const room = await ctx.db.query.Room.findFirst({
         where: eq(Room.code, input.code),
+        with: {
+          players: true,
+        },
       });
       if (!room) {
         throw new TRPCError({
@@ -64,6 +67,13 @@ export const roomRouter = createTRPCRouter({
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "This game has finished. Please create a new game.",
+        });
+      }
+
+      if (room.players.length >= 8) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "This game is full",
         });
       }
 
@@ -120,6 +130,7 @@ export const roomRouter = createTRPCRouter({
           cards: true,
         },
       });
+
       if (!room) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -282,7 +293,7 @@ export const roomRouter = createTRPCRouter({
 
       await ctx.db.insert(Card).values(finalFormatting);
 
-      await map(room.players, async (player) => {
+      await map(updatedRoom.players, async (player) => {
         return await map(Array.from({ length: 7 }), async () => {
           const randomCard = await ctx.db.query.Card.findFirst({
             orderBy: sql`rand()`,
@@ -306,46 +317,13 @@ export const roomRouter = createTRPCRouter({
       });
 
       await map(room.players, async (player, index) => {
-        if (index === 0) {
-          await ctx.db
-            .update(Player)
-            .set({
-              order: index,
-              isPlayersTurn: true,
-            })
-            .where(eq(Player.uid, player.uid));
-        } else {
-          await ctx.db
-            .update(Player)
-            .set({
-              order: index,
-            })
-            .where(eq(Player.uid, player.uid));
-        }
+        await ctx.db
+          .update(Player)
+          .set({
+            order: index,
+          })
+          .where(eq(Player.uid, player.uid));
       });
-
-      const firstCardToMatch = await ctx.db.query.Card.findFirst({
-        orderBy: sql`rand()`,
-        where: and(
-          eq(Card.roomUid, room.uid),
-          isNull(Card.playerUid),
-          eq(Card.type, "number"),
-        ),
-      });
-
-      if (!firstCardToMatch) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Card not found",
-        });
-      }
-
-      await ctx.db
-        .update(Card)
-        .set({
-          isCardToMatch: true,
-        })
-        .where(eq(Card.uid, firstCardToMatch.uid));
 
       const startingPlayer = await ctx.db.query.Player.findFirst({
         where: eq(Player.roomCode, input.code),
@@ -368,10 +346,7 @@ export const roomRouter = createTRPCRouter({
 
       await pusher.trigger(`presence-${input.code}`, "game-started", {
         message: "Game Started",
-        startingCard: firstCardToMatch,
         startingPlayer: startingPlayer,
       });
-
-      return firstCardToMatch;
     }),
 });

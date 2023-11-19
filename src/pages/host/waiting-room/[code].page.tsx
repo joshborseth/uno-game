@@ -57,7 +57,9 @@ const WaitingRoom = () => {
 
   const startGameMutation = api.room.startGame.useMutation({
     onSuccess: () => {
-      toast.success("Game Started!");
+      toast.success("Game Started!", {
+        id: "game-started",
+      });
       void router.push({
         pathname: `/host/play/${code}`,
         query: {
@@ -67,7 +69,9 @@ const WaitingRoom = () => {
       });
     },
     onError: (err) => {
-      toast.error(err.message);
+      toast.error(err.message, {
+        id: err.message,
+      });
     },
   });
 
@@ -83,7 +87,7 @@ const WaitingRoom = () => {
           </h2>
           <div className="flex w-full flex-wrap items-center justify-center gap-4 py-4">
             {players.map((p) => (
-              <PlayerCard name={p.info.name} key={p.id} />
+              <PlayerCard name={p.info.name} key={p.id} isPlayersTurn={false} />
             ))}
           </div>
           {/* TODO make this redirect us over to the play page */}

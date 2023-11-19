@@ -2,9 +2,9 @@ import { type NextPage } from "next";
 import { useRouter } from "next/router";
 import BaseHead from "~/components/BaseHead";
 import { PlayerCard } from "~/components/PlayerCard";
-import { type RouterOutputs, api } from "~/utils/api";
+import { api } from "~/utils/api";
 import { type PresenceChannel } from "pusher-js";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { CardToMatch } from "~/components/CardToMatch";
 import { getPusherInstance } from "~/utils/pusher";
 import Spinner from "~/components/Spinner";
@@ -14,35 +14,15 @@ const Play: NextPage = () => {
   const userId = router.query.userId as string;
   const code = router.query.code as string;
   const name = router.query.name as string;
-  const getAllPlayers = api.player.getAll.useQuery(
-    {
-      code,
-    },
-    {
-      enabled: !!code,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    },
-  );
+  const getAllPlayers = api.player.getAll.useQuery({
+    code,
+  });
 
-  const getInitialCardToMatch = api.card.drawFirst.useQuery(
-    {
-      code,
-    },
-    {
-      enabled: !!code,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    },
-  );
+  const getCurrentCardToMatch = api.card.getCurrentCardToMatch.useQuery({
+    code,
+  });
 
-  useEffect(() => {
-    if (getInitialCardToMatch.isSuccess) {
-      setCardToMatch(getInitialCardToMatch.data);
-    }
-  }, [getInitialCardToMatch.isSuccess, getInitialCardToMatch.data]);
+  const utils = api.useUtils();
 
   useEffect(() => {
     if (!code || !name || !userId) return;
@@ -53,21 +33,25 @@ const Play: NextPage = () => {
     });
     const channel = pusher.subscribe(`presence-${code}`) as PresenceChannel;
 
-    channel.bind("card-played", (data: RouterOutputs["card"]["playCard"]) => {
-      if (data) {
-        setCardToMatch(data.card);
-      }
+    channel.bind("card-played", () => {
+      void utils.card.getCurrentCardToMatch.invalidate();
+    });
+    channel.bind("turn-changed", () => {
+      void utils.player.getAll.invalidate();
     });
 
     return () => {
       pusher.unsubscribe(`presence-${code}`);
     };
-  }, [code, name, userId, getInitialCardToMatch.data]);
+  }, [
+    code,
+    name,
+    userId,
+    utils.card.getCurrentCardToMatch,
+    utils.player.getAll,
+  ]);
 
-  const [cardToMatch, setCardToMatch] =
-    useState<typeof getInitialCardToMatch.data>();
-
-  if (!cardToMatch || !getAllPlayers.data) {
+  if (!getCurrentCardToMatch.data || !getAllPlayers.data) {
     return (
       <div className="flex h-screen w-screen items-center justify-center overflow-hidden">
         <Spinner size="lg" accent />
@@ -78,20 +62,22 @@ const Play: NextPage = () => {
   return (
     <>
       <BaseHead title="UNO - Host" />
-      <main className="flex min-h-screen w-full flex-col items-center justify-end gap-20 pb-20">
-        <div className="flex flex-col items-center justify-center gap-10">
+      <main className="flex h-screen w-full flex-col items-center justify-center gap-4 overflow-y-hidden py-6">
+        <div className="flex flex-col items-center justify-center gap-5">
           <h2 className="text-2xl font-bold">Card To Match:</h2>
-          <CardToMatch card={cardToMatch} />
+          <CardToMatch card={getCurrentCardToMatch.data} />
         </div>
 
-        <div className="flex gap-10">
+        <div className="flex w-full flex-wrap justify-center gap-4 px-2">
           {!!getAllPlayers?.data?.length &&
             getAllPlayers.data.map((player) => (
-              <PlayerCard
-                name={player.name ?? ""}
-                key={player.uid}
-                cardsLeft={player.cards.length}
-              />
+              <div key={player.uid}>
+                <PlayerCard
+                  isPlayersTurn={player.isPlayersTurn}
+                  name={player.name ?? ""}
+                  cardsLeft={player.cards.length}
+                />
+              </div>
             ))}
         </div>
       </main>
@@ -103,7 +89,7 @@ export default Play;
 
 export const Title = () => {
   return (
-    <h1 className="text-primary text-7xl font-bold uppercase underline underline-offset-4">
+    <h1 className="text-7xl font-bold uppercase text-primary underline underline-offset-4">
       Uno
     </h1>
   );
