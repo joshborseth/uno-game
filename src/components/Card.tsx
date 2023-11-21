@@ -79,7 +79,7 @@ export const Card = (props: {
           },
           {
             onSuccess: () => {
-              void utils.card.getCurrentCardToMatch.invalidate();
+              void utils.card.invalidate();
             },
             onError: (err) => {
               toast.error(err.message);

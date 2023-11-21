@@ -60,6 +60,7 @@ export const Player = mysqlTable(
     return {
       roomCode: index("roomCode").on(table.roomCode),
       uid: index("uid").on(table.uid),
+      isPlayersTurn: index("isPlayersTurn").on(table.isPlayersTurn),
     };
   },
 );
@@ -87,6 +88,7 @@ export const Card = mysqlTable(
     return {
       uid: index("uid").on(table.uid),
       roomUid: index("roomUid").on(table.roomUid),
+      isCardToMatch: index("isCardToMatch").on(table.isCardToMatch),
     };
   },
 );

@@ -46,50 +46,13 @@ export const cardRouter = createTRPCRouter({
         });
       }
 
-      const cardToMatch = await ctx.db.query.Card.findFirst({
+      return await ctx.db.query.Card.findFirst({
         where: and(
           eq(Card.roomUid, room.uid),
           isNull(Card.playerUid),
           eq(Card.isCardToMatch, true),
         ),
       });
-
-      if (cardToMatch) {
-        return cardToMatch;
-      } else {
-        const firstCardToMatch = await ctx.db.query.Card.findFirst({
-          orderBy: sql`rand()`,
-          where: and(
-            eq(Card.roomUid, room.uid),
-            isNull(Card.playerUid),
-            eq(Card.type, "number"),
-          ),
-        });
-
-        if (!firstCardToMatch) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Card not found",
-          });
-        }
-
-        await ctx.db
-          .update(Card)
-          .set({
-            isCardToMatch: true,
-          })
-          .where(eq(Card.uid, firstCardToMatch.uid));
-
-        const updatedFirstCardToMatch = await ctx.db.query.Card.findFirst({
-          where: and(
-            eq(Card.roomUid, room.uid),
-            isNull(Card.playerUid),
-            eq(Card.isCardToMatch, true),
-          ),
-        });
-
-        return updatedFirstCardToMatch;
-      }
     }),
 
   chooseColor: publicProcedure
@@ -105,7 +68,7 @@ export const cardRouter = createTRPCRouter({
         where: eq(Room.code, input.code),
         with: {
           cards: {
-            where: and(eq(Card.isCardToMatch, true)),
+            where: eq(Card.isCardToMatch, true),
             with: {
               player: true,
             },
@@ -154,7 +117,7 @@ export const cardRouter = createTRPCRouter({
       await issueCardsToNextPlayer({
         cardType: cardToMatch.type!,
         nextPlayer: nextPlayer,
-        roomCode: room.code!,
+        roomUid: room.uid,
       });
 
       await ctx.db
@@ -175,17 +138,19 @@ export const cardRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const card = await ctx.db.query.Card.findFirst({
-        where: and(
-          eq(Card.uid, input.cardUid),
-          eq(Card.playerUid, input.playerUid),
-        ),
+      const player = await ctx.db.query.Player.findFirst({
+        where: eq(Player.uid, input.playerUid),
         with: {
+          cards: {
+            where: and(
+              eq(Card.uid, input.cardUid),
+              eq(Card.playerUid, input.playerUid),
+            ),
+          },
           room: true,
-          player: true,
         },
       });
-
+      const card = player?.cards[0];
       if (!card) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -193,7 +158,7 @@ export const cardRouter = createTRPCRouter({
         });
       }
 
-      if (!card.player?.isPlayersTurn) {
+      if (!player?.isPlayersTurn) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "It is not your turn",
@@ -202,7 +167,7 @@ export const cardRouter = createTRPCRouter({
 
       const cardToMatch = await ctx.db.query.Card.findFirst({
         where: and(
-          eq(Card.roomUid, card.roomUid),
+          eq(Card.roomUid, player.room.uid),
           eq(Card.isCardToMatch, true),
         ),
       });
@@ -266,12 +231,12 @@ export const cardRouter = createTRPCRouter({
         const response = {
           message: "Card Played",
           card: result,
-          player: card.player,
-          room: card.room,
+          player: player,
+          room: player.room,
         };
 
         await pusher.trigger(
-          `presence-${card.room.code}`,
+          `presence-${player.room.code}`,
           "card-played",
           response,
         );
@@ -289,23 +254,23 @@ export const cardRouter = createTRPCRouter({
           const response = {
             message: "Card Played",
             card: result,
-            player: card.player,
-            room: card.room,
+            player: player,
+            room: player.room,
           };
 
           await pusher.trigger(
-            `presence-${card.room.code}`,
+            `presence-${player.room.code}`,
             "card-played",
             response,
           );
 
-          if (!card.room.code) {
+          if (!player.room.code) {
             throw new TRPCError({
               code: "NOT_FOUND",
               message: "Room code not found. This should never happen.",
             });
           }
-          await switchTurn({ roomCode: card.room.code, cardType: card.type });
+          await switchTurn({ roomCode: player.room.code, cardType: card.type });
           return response;
         } else {
           throw new TRPCError({
@@ -329,12 +294,12 @@ export const cardRouter = createTRPCRouter({
           const response = {
             message: "Card Played",
             card: result,
-            player: card.player,
-            room: card.room,
+            player: player,
+            room: player.room,
           };
 
           if (card.type === "draw2") {
-            if (!card.room.code || !card.player) {
+            if (!player.room.code || !player) {
               throw new TRPCError({
                 code: "BAD_REQUEST",
                 message:
@@ -343,7 +308,7 @@ export const cardRouter = createTRPCRouter({
             }
 
             const findAllPlayers = await ctx.db.query.Player.findMany({
-              where: eq(Player.roomCode, card.room.code),
+              where: eq(Player.roomCode, player.room.code),
             });
 
             if (!findAllPlayers.length) {
@@ -356,26 +321,30 @@ export const cardRouter = createTRPCRouter({
             const nextPlayer = await findNextPlayer({
               allPlayersInRoom: findAllPlayers,
               cardType: card.type,
-              player: card.player,
-              roomCode: card.room.code,
+              player: player,
+              roomCode: player.room.code,
             });
             await switchTurn({
               cardType: card.type,
-              roomCode: card.room.code,
+              roomCode: player.room.code,
             });
             const cards = await issueCardsToNextPlayer({
               cardType: card.type,
               nextPlayer: nextPlayer,
-              roomCode: card.room.code,
+              roomUid: player.room.uid,
             });
-            await pusher.trigger(`presence-${card.room.code}`, "cards-issued", {
-              player: nextPlayer,
-              cards,
-            });
+            await pusher.trigger(
+              `presence-${player.room.code}`,
+              "cards-issued",
+              {
+                player: nextPlayer,
+                cards,
+              },
+            );
           }
 
           await pusher.trigger(
-            `presence-${card.room.code}`,
+            `presence-${player.room.code}`,
             "card-played",
             response,
           );
@@ -412,7 +381,11 @@ export const cardRouter = createTRPCRouter({
       }
 
       const randomCard = await ctx.db.query.Card.findFirst({
-        where: and(isNull(Card.playerUid), eq(Card.isCardToMatch, false)),
+        where: and(
+          isNull(Card.playerUid),
+          eq(Card.isCardToMatch, false),
+          eq(Card.roomUid, player.room.uid),
+        ),
         orderBy: sql`rand()`,
       });
 
@@ -516,12 +489,6 @@ const switchTurn = async ({
     }
   }
 
-  if (!cardType) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "Card type is null",
-    });
-  }
   const nextPlayer = await findNextPlayer({
     allPlayersInRoom: allPlayersInRoom,
     player: player,
@@ -566,7 +533,7 @@ const findNextPlayer = async ({
   allPlayersInRoom: (typeof Player.$inferSelect)[];
   player: typeof Player.$inferSelect;
   roomCode: string;
-  cardType: (typeof CARD_TYPES)[number];
+  cardType: (typeof CARD_TYPES)[number] | null;
 }) => {
   if (!allPlayersInRoom.length || (!player?.order && player.order !== 0)) {
     throw new TRPCError({
@@ -660,16 +627,16 @@ const findNextPlayer = async ({
 const issueCardsToNextPlayer = async ({
   nextPlayer,
   cardType,
-  roomCode,
+  roomUid,
 }: {
   nextPlayer: typeof Player.$inferSelect;
   cardType: (typeof CARD_TYPES)[number];
-  roomCode: string;
+  roomUid: string;
 }) => {
   const getRandomCards = async (limit: number) => {
     return await db.query.Card.findMany({
       where: and(
-        eq(Card.roomUid, roomCode),
+        eq(Card.roomUid, roomUid),
         isNull(Card.playerUid),
         eq(Card.isCardToMatch, false),
       ),
