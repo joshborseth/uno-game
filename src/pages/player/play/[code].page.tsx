@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { type PresenceChannel } from "pusher-js";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
 import BaseHead from "~/components/BaseHead";
@@ -70,7 +70,7 @@ const Play = () => {
         )}
       >
         <div className="w-32" />
-        <PickupCard />
+        <PickupCard isPlayersTurn={findMe?.isPlayersTurn ?? false} />
         {!!cardsForCurrentPlayer.data?.length && (
           <CardHand
             cards={cardsForCurrentPlayer.data}
