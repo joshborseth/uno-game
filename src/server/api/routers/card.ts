@@ -134,7 +134,6 @@ export const cardRouter = createTRPCRouter({
           message: "Card type not found.",
         });
       }
-      console.log(input.wildColor);
       if (card.type === "wild" || card.type === "draw4") {
         await ctx.db
           .update(Card)
@@ -210,7 +209,8 @@ export const cardRouter = createTRPCRouter({
       if (card.type === "number") {
         if (
           card.numberValue === cardToMatch.numberValue ||
-          card.color === cardToMatch.color
+          card.color === cardToMatch.color ||
+          card.color === cardToMatch.wildColor
         ) {
           const result = await playCard();
 
@@ -250,7 +250,8 @@ export const cardRouter = createTRPCRouter({
       ) {
         if (
           card.type === cardToMatch.type ||
-          card.color === cardToMatch.color
+          card.color === cardToMatch.color ||
+          card.color === cardToMatch.wildColor
         ) {
           const result = await playCard();
 

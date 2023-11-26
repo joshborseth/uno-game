@@ -72,7 +72,7 @@ const Play: NextPage = () => {
   return (
     <>
       <BaseHead title="UNO - Host" />
-      <main className="flex h-screen w-full flex-col items-center justify-center gap-4 overflow-y-hidden py-6">
+      <main className="flex h-screen w-full flex-col items-center justify-center gap-10 overflow-y-hidden py-6">
         <div className="flex flex-col items-center justify-center gap-5">
           <h2 className="text-2xl font-bold">Card To Match:</h2>
           <CardToMatch card={getCurrentCardToMatch.data} />

@@ -86,7 +86,7 @@ export const Card = (props: {
             ? "pointer-events-none opacity-40"
             : "hover:scale-[1.07]",
           props.disableMouseEvents && "pointer-events-none",
-          props.card.type === "wild" &&
+          (props.card.type === "wild" || props.card.type === "draw4") &&
             props.isCardToMatch &&
             props.card.wildColor &&
             `ring-4 ${ringColorMap[props.card.wildColor]}`,
