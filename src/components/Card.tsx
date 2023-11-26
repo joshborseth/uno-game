@@ -2,8 +2,7 @@ import { twMerge } from "tailwind-merge";
 import { type RouterOutputs, api } from "~/utils/api";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-import SelectColourModal from "./SelectColourModal";
-import { useState } from "react";
+import { useModalState } from "~/stores/modal";
 
 const bgColorMap = {
   red: "bg-red-500",
@@ -67,18 +66,10 @@ export const Card = (props: {
       return "Draw two";
     }
   };
-
-  const [colorModal, setColorModal] = useState(false);
+  const modalState = useModalState();
 
   return (
     <>
-      <SelectColourModal
-        open={colorModal}
-        setOpen={setColorModal}
-        cardUid={props.card.uid}
-        playerUid={userId}
-      />
-
       <button
         className={twMerge(
           "jb-card relative m-10 rounded transition-all",
@@ -93,7 +84,7 @@ export const Card = (props: {
         disabled={props.actionsDisabled || playCardMutation.isLoading}
         onClick={() => {
           if (props.card.type === "wild" || props.card.type === "draw4") {
-            return setColorModal(true);
+            return modalState.setOpen(true);
           }
           playCardMutation.mutate(
             {

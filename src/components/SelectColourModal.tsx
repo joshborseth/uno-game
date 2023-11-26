@@ -1,31 +1,25 @@
+import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
 import { type COLORS } from "~/constants/colors";
+import { useModalState } from "~/stores/modal";
 import { api } from "~/utils/api";
-
-const SelectColourModal = ({
-  open,
-  setOpen,
-  cardUid,
-  playerUid,
-}: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  cardUid: string;
-  playerUid: string;
-}) => {
+const SelectColourModal = () => {
+  const router = useRouter();
+  const playerUid = router.query.userId as string;
   const playCardMutation = api.card.playCard.useMutation();
   const utils = api.useUtils();
+  const modalState = useModalState();
   const handleColorSelect = (color: (typeof COLORS)[number]) => {
     playCardMutation.mutate(
       {
-        cardUid,
+        cardUid: modalState.cardUid,
         playerUid,
         wildColor: color,
       },
       {
         onSuccess: () => {
-          setOpen(false);
+          modalState.setOpen(false);
           void utils.card.invalidate();
         },
         onError: (err) => {
@@ -36,7 +30,11 @@ const SelectColourModal = ({
   };
   return (
     <>
-      <dialog open={open} onClose={() => setOpen(false)} className="modal">
+      <dialog
+        open={true}
+        onClose={() => modalState.setOpen(false)}
+        className="modal"
+      >
         <div className="modal-box">
           <div className="flex flex-wrap justify-center gap-4">
             <h2 className="w-full text-center text-2xl font-bold">

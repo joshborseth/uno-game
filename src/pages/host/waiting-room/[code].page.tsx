@@ -90,7 +90,6 @@ const WaitingRoom = () => {
               <PlayerCard name={p.info.name} key={p.id} isPlayersTurn={false} />
             ))}
           </div>
-          {/* TODO make this redirect us over to the play page */}
           <button
             onClick={() => {
               startGameMutation.mutate({

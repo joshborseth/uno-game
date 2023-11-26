@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { type PresenceChannel } from "pusher-js";
-import React, { useEffect } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
 import BaseHead from "~/components/BaseHead";
@@ -14,6 +14,8 @@ import "swiper/css";
 import "swiper/css/effect-cards";
 
 import { EffectCards } from "swiper/modules";
+import SelectColourModal from "~/components/SelectColourModal";
+
 const Play = () => {
   const router = useRouter();
   const userId = router.query.userId as string;
@@ -75,12 +77,14 @@ const Play = () => {
       >
         <div className="w-32" />
         <PickupCard isPlayersTurn={findMe?.isPlayersTurn ?? false} />
+
         {!!cardsForCurrentPlayer.data?.length && (
           <CardHand
             cards={cardsForCurrentPlayer.data}
             disabled={!findMe?.isPlayersTurn}
           />
         )}
+        <SelectColourModal />
       </main>
     </>
   );
