@@ -55,86 +55,12 @@ export const cardRouter = createTRPCRouter({
       });
     }),
 
-  chooseColor: publicProcedure
-    .input(
-      z.object({
-        code: z.string(),
-        color: z.enum(COLORS),
-        playerUid: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const room = await ctx.db.query.Room.findFirst({
-        where: eq(Room.code, input.code),
-        with: {
-          cards: {
-            where: eq(Card.isCardToMatch, true),
-            with: {
-              player: true,
-            },
-          },
-          players: true,
-        },
-      });
-
-      if (!room) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Room not found",
-        });
-      }
-      const cardToMatch = room.cards[0];
-      if (room.cards.length > 1 || !cardToMatch) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong finding card",
-        });
-      }
-
-      await ctx.db
-        .update(Card)
-        .set({
-          wildColor: input.color,
-        })
-        .where(eq(Card.uid, cardToMatch.uid));
-
-      await pusher.trigger(`presence-${room.code}`, "color-chosen", {
-        message: "Color Chosen",
-        card: cardToMatch,
-        color: input.color,
-      });
-
-      const nextPlayer = await findNextPlayer({
-        allPlayersInRoom: room.players!,
-        cardType: cardToMatch.type!,
-        player: cardToMatch.player!,
-        roomCode: room.code!,
-      });
-      await switchTurn({
-        roomCode: room.code!,
-        cardType: cardToMatch.type,
-      });
-      await issueCardsToNextPlayer({
-        cardType: cardToMatch.type!,
-        nextPlayer: nextPlayer,
-        roomUid: room.uid,
-      });
-
-      await ctx.db
-        .update(Card)
-        .set({
-          playerUid: null,
-        })
-        .where(eq(Card.uid, cardToMatch.uid));
-
-      return;
-    }),
-
   playCard: publicProcedure
     .input(
       z.object({
         cardUid: z.string(),
         playerUid: z.string(),
+        wildColor: z.enum(COLORS).nullish(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -193,6 +119,7 @@ export const cardRouter = createTRPCRouter({
           .update(Card)
           .set({
             isCardToMatch: false,
+            wildColor: null,
           })
           .where(eq(Card.uid, cardToMatch.uid));
 
@@ -207,13 +134,14 @@ export const cardRouter = createTRPCRouter({
           message: "Card type not found.",
         });
       }
-
+      console.log(input.wildColor);
       if (card.type === "wild" || card.type === "draw4") {
         await ctx.db
           .update(Card)
           .set({
             playerUid: null,
             isCardToMatch: true,
+            wildColor: input.wildColor,
           })
           .where(eq(Card.uid, card.uid));
 
@@ -221,8 +149,43 @@ export const cardRouter = createTRPCRouter({
           .update(Card)
           .set({
             isCardToMatch: false,
+            wildColor: null,
           })
           .where(eq(Card.uid, cardToMatch.uid));
+
+        if (!player.room.code) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Room code not found. This should never happen.",
+          });
+        }
+
+        const findAllPlayers = await ctx.db.query.Player.findMany({
+          where: eq(Player.roomCode, player.room.code),
+        });
+
+        const nextPlayer = await findNextPlayer({
+          allPlayersInRoom: findAllPlayers,
+          cardType: card.type,
+          player: player,
+          roomCode: player.room.code,
+        });
+
+        const cards = await issueCardsToNextPlayer({
+          cardType: card.type,
+          nextPlayer: nextPlayer,
+          roomUid: player.room.uid,
+        });
+
+        const switchTurnResponse = await switchTurn({
+          cardType: card.type,
+          roomCode: player.room.code!,
+        });
+
+        await pusher.trigger(`presence-${player.room.code}`, "cards-issued", {
+          player: switchTurnResponse.newPlayer,
+          cards,
+        });
 
         const result = await ctx.db.query.Card.findFirst({
           where: eq(Card.uid, card.uid),

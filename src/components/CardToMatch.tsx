@@ -8,6 +8,7 @@ export const CardToMatch = ({
 }) => {
   return (
     <Card
+      isCardToMatch
       card={{
         ...card,
       }}

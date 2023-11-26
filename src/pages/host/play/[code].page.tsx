@@ -14,13 +14,23 @@ const Play: NextPage = () => {
   const userId = router.query.userId as string;
   const code = router.query.code as string;
   const name = router.query.name as string;
-  const getAllPlayers = api.player.getAll.useQuery({
-    code,
-  });
+  const getAllPlayers = api.player.getAll.useQuery(
+    {
+      code,
+    },
+    {
+      enabled: !!code,
+    },
+  );
 
-  const getCurrentCardToMatch = api.card.getCurrentCardToMatch.useQuery({
-    code,
-  });
+  const getCurrentCardToMatch = api.card.getCurrentCardToMatch.useQuery(
+    {
+      code,
+    },
+    {
+      enabled: !!code,
+    },
+  );
 
   const utils = api.useUtils();
 
