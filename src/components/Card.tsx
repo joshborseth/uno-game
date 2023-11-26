@@ -81,10 +81,9 @@ export const Card = (props: {
 
       <button
         className={twMerge(
-          "relative rounded transition-all",
-          props.actionsDisabled || playCardMutation.isLoading
-            ? "pointer-events-none opacity-40"
-            : "hover:scale-[1.07]",
+          "jb-card relative m-10 rounded transition-all",
+          (props.actionsDisabled || playCardMutation.isLoading) &&
+            "pointer-events-none opacity-40",
           props.disableMouseEvents && "pointer-events-none",
           (props.card.type === "wild" || props.card.type === "draw4") &&
             props.isCardToMatch &&

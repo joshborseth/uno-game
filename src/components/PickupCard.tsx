@@ -42,7 +42,14 @@ const PickupCard = ({ isPlayersTurn }: { isPlayersTurn: boolean }) => {
         className="translate-z stack relative translate-x-14 opacity-100 shadow-2xl disabled:opacity-50"
         disabled={drawCard.isLoading || !isPlayersTurn}
       >
-        <div className="no-highlight duration-400 h-40 w-28 rounded-md border-2 border-black bg-black p-1 transition-all hover:translate-y-2 hover:scale-105">
+        <div
+          className={twMerge(
+            "no-highlight duration-400 h-40 w-28 rounded-md border-2 border-black bg-black p-1 transition-all",
+            isPlayersTurn &&
+              !drawCard.isLoading &&
+              "hover:translate-y-2 hover:scale-105",
+          )}
+        >
           <div className="relative h-full w-full border-2 border-white p-1">
             <div className="-ml-2 -mt-6 flex h-full w-full -rotate-12 flex-col items-center justify-center text-4xl font-bold uppercase text-white">
               <p className="-mb-1 ml-4">Uno</p>
