@@ -21,3 +21,11 @@ main {
 .translate-z {
   transform: rotate3d(2, 1, 2, 290deg);
 }
+
+.swiper-slide-shadow {
+  background: transparent !important;
+}
+
+.swiper-slide-active .jb-card {
+  transform: scale(1.2);
+}
