@@ -31,7 +31,7 @@ const SelectColourModal = () => {
   return (
     <>
       <dialog
-        open={true}
+        open={modalState.isOpen}
         onClose={() => modalState.setOpen(false)}
         className="modal"
       >
